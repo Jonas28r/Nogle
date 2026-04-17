@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería Híbrida - Visor Inteligente</title>
+    <style>
+        /* CSS ultraligero y enfocado en inmersión (Modo Oscuro) */
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a; /* Fondo oscuro tipo manhwa */
+            color: #fff;
+            font-family: sans-serif;
+            overflow-x: hidden; /* Evita el scroll horizontal accidental */
+        }
+
+        #gallery-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px; /* Ancho máximo para que no se vea gigante en PC, perfecto en móvil */
+            margin: 0 auto;
+        }
+
+        .media-item {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+            /* Un placeholder oscuro mientras carga */
+            background-color: #1a1a1a; 
+            min-height: 50vh; /* Altura mínima para que el observer no se confunda al inicio */
+        }
+
+        /* Estilo para el botón final de OnlyFans */
+        .conversion-card {
+            padding: 40px 20px;
+            text-align: center;
+            background: linear-gradient(to bottom, #0a0a0a, #1f1f1f);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn-premium {
+            display: inline-block;
+            background-color: #00aff0; /* Azul característico */
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 175, 240, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="gallery-container">
+        </div>
+
+    <script>
+        // 1. EL MOLDE: JSON Simulado (Esto en el futuro vendrá de tu Worker)
+        const mockData = {
+            creator: "María VIP",
+            conversion_link: "https://onlyfans.com/ejemplo",
+            items: [
+                { id: 1, type: "image", src: "https://via.placeholder.com/600x900/222/fff?text=Foto+1" },
+                { id: 2, type: "image", src: "https://via.placeholder.com/600x900/333/fff?text=Foto+2" },
+                // Video de prueba open source (El espejismo/poster actúa antes de que cargue)
+                { id: 3, type: "video", src: "https://www.w3schools.com/html/mov_bbb.mp4", poster: "https://via.placeholder.com/600x900/111/fff?text=Cargando+Video..." },
+                { id: 4, type: "image", src: "https://via.placeholder.com/600x1200/222/fff?text=Foto+3+(Larga)" },
+                { id: 5, type: "video", src: "https://www.w3schools.com/html/mov_bbb.mp4", poster: "https://via.placeholder.com/600x900/111/fff?text=Cargando+Video+2..." }
+            ]
+        };
+
+        const container = document.getElementById('gallery-container');
+
+        // 2. EL CONSTRUCTOR: Renderiza el HTML basado en el JSON
+        function renderGallery(data) {
+            data.items.forEach(item => {
+                let element;
+                if (item.type === 'image') {
+                    element = document.createElement('img');
+                    element.src = item.src;
+                    element.className = 'media-item';
+                    element.loading = "lazy"; // Inteligencia nativa: solo carga si está cerca
+                } else if (item.type === 'video') {
+                    element = document.createElement('video');
+                    element.src = item.src;
+                    element.poster = item.poster; // La Fase 2: El Espejismo visual
+                    element.className = 'media-item';
+                    element.muted = true; // REGLA DE ORO: Debe estar silenciado para el Autoplay
+                    element.loop = true;
+                    element.playsInline = true; // Vital para iOS (no abre pantalla completa)
+                }
+                container.appendChild(element);
+            });
+
+            // Añadir la tarjeta de conversión al final
+            const endCard = document.createElement('div');
+            endCard.className = 'conversion-card';
+            endCard.innerHTML = `
+                <h2>¿Te gustó el contenido de ${data.creator}?</h2>
+                <p>Desbloquea la galería completa y videos sin censura.</p>
+                <a href="${data.conversion_link}" class="btn-premium">Suscríbete ahora</a>
+            `;
+            container.appendChild(endCard);
+        }
+
+        renderGallery(mockData);
+
+        // 3. EL CEREBRO: Reproducción por Foco (Intersection Observer)
+        // Configuramos la "Zona Caliente"
+        const observerOptions = {
+            root: null, // Usa el viewport del navegador
+            rootMargin: '0px',
+            threshold: 0.6 // El 60% del video debe estar visible en pantalla para activarse
+        };
+
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const video = entry.target;
+                
+                // Fase 3: Interacción y Reproducción
+                if (entry.isIntersecting) {
+                    // Entró a la Zona Caliente
+                    video.play().catch(error => {
+                        console.log("El navegador bloqueó el autoplay:", error);
+                    });
+                } else {
+                    // Fase 4: Destrucción/Pausa al salir de la zona
+                    video.pause();
+                }
+            });
+        }, observerOptions);
+
+        // Activamos el "Ojo" del observer en todos los videos generados
+        const allVideos = document.querySelectorAll('video');
+        allVideos.forEach(video => {
+            videoObserver.observe(video);
+            
+            // Un pequeño extra de UX: Si el usuario toca el video, activa el sonido
+            video.addEventListener('click', () => {
+                video.muted = !video.muted;
+            });
+        });
+
+    </script>
+</body>
+</html>
+
