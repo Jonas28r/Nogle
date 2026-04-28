@@ -1,40 +1,46 @@
+/* =========================================
+   KNON APP ENGINE - CATÁLOGO Y REPRODUCTOR
+   ========================================= */
+
 const app = {
-    // 1. DATA: Aquí agregarás tus modelos de R2 más tarde
+    // BASE DE DATOS (Muestra)
     creators: [
         {
             id: "maria-vip",
             name: "María VIP",
-            cover: "https://via.placeholder.com/600x800/111/fff?text=Maria+Cover",
+            cover: "https://via.placeholder.com/600x800/111/fff?text=Maria+Portada",
             badge: "NUEVA",
-            description: "24 Galerías • 5 Videos",
+            description: "24 Fotos • 3 Videos",
             link: "https://onlyfans.com/maria",
             content: [
-                { type: "image", src: "https://via.placeholder.com/600x1000/222/fff?text=Foto+1" },
+                { type: "image", src: "https://via.placeholder.com/600x1000/222/fff?text=Femenina+Foto+1" },
                 { type: "hybrid", webp: "https://via.placeholder.com/600x1000/111/fff?text=WebP+Loop", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
-                { type: "image", src: "https://via.placeholder.com/600x1000/333/fff?text=Foto+2" }
+                { type: "image", src: "https://via.placeholder.com/600x1000/333/fff?text=Femenina+Foto+2" }
             ]
         },
         {
             id: "sofia-luxury",
             name: "Sofia Luxury",
-            cover: "https://via.placeholder.com/600x800/222/fff?text=Sofia+Cover",
+            cover: "https://via.placeholder.com/600x800/222/fff?text=Sofia+Portada",
             badge: "POPULAR",
-            description: "15 Galerías • 2 Videos",
+            description: "12 Fotos • 1 Video",
             link: "https://onlyfans.com/sofia",
             content: []
         }
     ],
 
-    // 2. NAVEGACIÓN
     init() {
         this.container = document.getElementById('main-content');
         this.showLibrary();
         this.initObserver();
     },
 
+    // PANTALLA 1: LA BIBLIOTECA
     showLibrary() {
         window.scrollTo(0,0);
         this.container.classList.remove('viewer-mode');
+        document.getElementById('btn-library').classList.add('active');
+        
         let html = `<div class="knon-grid">`;
         this.creators.forEach(c => {
             html += `
@@ -52,15 +58,17 @@ const app = {
         this.container.innerHTML = html;
     },
 
+    // PANTALLA 2: EL VISOR
     showViewer(id) {
         window.scrollTo(0,0);
         const creator = this.creators.find(c => c.id === id);
         this.container.classList.add('viewer-mode');
-        
+        document.getElementById('btn-library').classList.remove('active');
+
         let html = "";
         creator.content.forEach(item => {
             if(item.type === 'image') {
-                html += `<img src="${item.src}" class="media-item" style="width:100%; display:block; opacity:1">`;
+                html += `<img src="${item.src}" class="media-item" style="width:100%; display:block; margin-bottom:-1px;">`;
             } else {
                 html += `
                     <div class="media-wrapper" data-video="${item.video}">
@@ -78,7 +86,7 @@ const app = {
         this.rebindObserver();
     },
 
-    // 3. LÓGICA DEL REPRODUCTOR HÍBRIDO (Foco y Autodestrucción)
+    // LÓGICA HÍBRIDA (Autodestrucción de RAM)
     initObserver() {
         this.observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -103,7 +111,7 @@ const app = {
                     wrapper.classList.remove('video-ready');
                 }
             });
-        }, { threshold: 0.6 });
+        }, { threshold: 0.5 });
     },
 
     rebindObserver() {
