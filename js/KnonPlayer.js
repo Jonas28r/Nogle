@@ -1,150 +1,114 @@
-/* =========================================
-   KNON PLAYER - CORE LOGIC
-   ========================================= */
-
-// 1. EL MOLDE: JSON Simulado (Para probar la estructura Híbrida)
-const mockData = {
-    creator: "María VIP",
-    conversion_link: "https://onlyfans.com/ejemplo",
-    items: [
-        { id: 1, type: "image", src: "https://via.placeholder.com/600x900/222/fff?text=Foto+Estática+1" },
-        { 
-            id: 2, 
-            type: "hybrid", 
-            videoSrc: "https://www.w3schools.com/html/mov_bbb.mp4", 
-            webpSrc: "https://via.placeholder.com/600x900/111/fff?text=Animacion+WebP+1" 
+const app = {
+    // 1. DATA: Aquí agregarás tus modelos de R2 más tarde
+    creators: [
+        {
+            id: "maria-vip",
+            name: "María VIP",
+            cover: "https://via.placeholder.com/600x800/111/fff?text=Maria+Cover",
+            badge: "NUEVA",
+            description: "24 Galerías • 5 Videos",
+            link: "https://onlyfans.com/maria",
+            content: [
+                { type: "image", src: "https://via.placeholder.com/600x1000/222/fff?text=Foto+1" },
+                { type: "hybrid", webp: "https://via.placeholder.com/600x1000/111/fff?text=WebP+Loop", video: "https://www.w3schools.com/html/mov_bbb.mp4" },
+                { type: "image", src: "https://via.placeholder.com/600x1000/333/fff?text=Foto+2" }
+            ]
         },
-        { id: 3, type: "image", src: "https://via.placeholder.com/600x1200/222/fff?text=Foto+Estática+2+(Larga)" },
-        { 
-            id: 4, 
-            type: "hybrid", 
-            videoSrc: "https://www.w3schools.com/html/mov_bbb.mp4", 
-            webpSrc: "https://via.placeholder.com/600x900/111/fff?text=Animacion+WebP+2" 
+        {
+            id: "sofia-luxury",
+            name: "Sofia Luxury",
+            cover: "https://via.placeholder.com/600x800/222/fff?text=Sofia+Cover",
+            badge: "POPULAR",
+            description: "15 Galerías • 2 Videos",
+            link: "https://onlyfans.com/sofia",
+            content: []
         }
-    ]
-};
+    ],
 
-const container = document.getElementById('gallery-container');
+    // 2. NAVEGACIÓN
+    init() {
+        this.container = document.getElementById('main-content');
+        this.showLibrary();
+        this.initObserver();
+    },
 
-// 2. EL CEREBRO: Observador de Foco y Autodestrucción
-const hybridObserverOptions = {
-    root: null, 
-    rootMargin: '0px',
-    threshold: 0.6 // El 60% del wrapper debe estar visible
-};
+    showLibrary() {
+        window.scrollTo(0,0);
+        this.container.classList.remove('viewer-mode');
+        let html = `<div class="knon-grid">`;
+        this.creators.forEach(c => {
+            html += `
+                <div class="knon-card" onclick="app.showViewer('${c.id}')">
+                    <div class="badge">${c.badge}</div>
+                    <img src="${c.cover}" loading="lazy">
+                    <div class="info">
+                        <h3>${c.name}</h3>
+                        <p>${c.description}</p>
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+        this.container.innerHTML = html;
+    },
 
-const hybridObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        const wrapper = entry.target;
-        // Recuperamos la URL del video original que guardamos en el dataset del wrapper
-        const videoSrc = wrapper.dataset.videoSrc; 
-
-        if (entry.isIntersecting) {
-            // ==========================================
-            // FASE 1 y 3: RECONSTRUCCIÓN Y REPRODUCCIÓN
-            // ==========================================
-            let video = wrapper.querySelector('video');
-            
-            // Si el video no existe (fue autodestruido), lo volvemos a crear mágicamente
-            if (!video) {
-                video = document.createElement('video');
-                video.className = 'video-layer';
-                video.src = videoSrc;
-                video.muted = true; // Vital para el autoplay
-                video.loop = true;
-                video.playsInline = true;
-
-                // FASE 2: TRANSICIÓN WEBP -> VIDEO ("El Pumm")
-                // Solo cuando el video ya tiene datos y empieza a rodar, hacemos el cambio visual
-                video.addEventListener('playing', () => {
-                    wrapper.classList.add('video-ready');
-                });
-
-                // UX: Tocar para mutear/desmutear
-                video.addEventListener('click', () => {
-                    video.muted = !video.muted;
-                });
-
-                // Inyectamos el video al DOM
-                wrapper.appendChild(video);
+    showViewer(id) {
+        window.scrollTo(0,0);
+        const creator = this.creators.find(c => c.id === id);
+        this.container.classList.add('viewer-mode');
+        
+        let html = "";
+        creator.content.forEach(item => {
+            if(item.type === 'image') {
+                html += `<img src="${item.src}" class="media-item" style="width:100%; display:block; opacity:1">`;
+            } else {
+                html += `
+                    <div class="media-wrapper" data-video="${item.video}">
+                        <img src="${item.webp}" class="webp-layer" loading="lazy">
+                    </div>`;
             }
-            
-            // Le damos Play. Usamos .catch para evitar errores en consola si el navegador es muy estricto
-            video.play().catch(error => {
-                console.log("Autoplay requiere interacción previa del usuario:", error);
+        });
+
+        html += `
+            <a href="${creator.link}" class="btn-premium">Suscríbete ahora</a>
+            <div class="knon-footer">Architecture by <span class="knon-signature">Knon</span> ECOSYSTEM</div>
+        `;
+        
+        this.container.innerHTML = html;
+        this.rebindObserver();
+    },
+
+    // 3. LÓGICA DEL REPRODUCTOR HÍBRIDO (Foco y Autodestrucción)
+    initObserver() {
+        this.observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const wrapper = entry.target;
+                const videoSrc = wrapper.dataset.video;
+                if (entry.isIntersecting) {
+                    let video = wrapper.querySelector('video');
+                    if (!video) {
+                        video = document.createElement('video');
+                        video.className = 'video-layer';
+                        video.src = videoSrc;
+                        video.muted = true; video.loop = true; video.playsInline = true;
+                        video.onplaying = () => wrapper.classList.add('video-ready');
+                        wrapper.appendChild(video);
+                    }
+                    video.play().catch(() => {});
+                } else {
+                    const video = wrapper.querySelector('video');
+                    if (video) {
+                        video.pause(); video.removeAttribute('src'); video.load(); video.remove();
+                    }
+                    wrapper.classList.remove('video-ready');
+                }
             });
+        }, { threshold: 0.6 });
+    },
 
-        } else {
-            // ==========================================
-            // FASE 3: LA AUTODESTRUCCIÓN (Ahorro Extremo)
-            // ==========================================
-            const video = wrapper.querySelector('video');
-            
-            if (video) {
-                video.pause();
-                video.removeAttribute('src'); // Desconecta el flujo de datos de la red
-                video.load(); // Fuerza al navegador a liberar la memoria RAM de este archivo
-                video.remove(); // Destruye el elemento HTML por completo
-            }
-            
-            // Quitamos la clase 'video-ready' para que el WebP (Señuelo) vuelva a ser visible 
-            // cuando el usuario haga scroll de regreso.
-            wrapper.classList.remove('video-ready');
-        }
-    });
-}, hybridObserverOptions);
+    rebindObserver() {
+        document.querySelectorAll('.media-wrapper').forEach(w => this.observer.observe(w));
+    }
+};
 
-// 3. EL CONSTRUCTOR: Renderiza el HTML inicial
-function renderGallery(data) {
-    data.items.forEach(item => {
-        if (item.type === 'image') {
-            // Renderizado de foto normal
-            const img = document.createElement('img');
-            img.src = item.src;
-            img.className = 'media-item';
-            img.loading = "lazy";
-            container.appendChild(img);
-            
-        } else if (item.type === 'hybrid') {
-            // Renderizado de nuestra estructura Knon Híbrida
-            const wrapper = document.createElement('div');
-            wrapper.className = 'media-wrapper';
-            // Guardamos la ruta del video crudo escondida en el HTML
-            wrapper.dataset.videoSrc = item.videoSrc; 
-
-            // Creamos el Señuelo (WebP)
-            const webp = document.createElement('img');
-            webp.src = item.webpSrc;
-            webp.className = 'webp-layer';
-            webp.loading = "lazy"; // Que el señuelo tampoco gaste datos si está muy lejos
-
-            // Metemos el señuelo en el molde y el molde al contenedor principal
-            wrapper.appendChild(webp);
-            container.appendChild(wrapper);
-
-            // IMPORTANTE: Le ponemos el ojo al molde, no al video.
-            hybridObserver.observe(wrapper);
-        }
-    });
-
-    // Añadir la Knon Conversion Card al final
-    const endCard = document.createElement('div');
-    endCard.className = 'conversion-card';
-    endCard.innerHTML = `
-        <h2>¿Te gustó el contenido de ${data.creator}?</h2>
-        <p>Desbloquea la galería completa y videos sin censura.</p>
-        <a href="${data.conversion_link}" class="btn-premium">Suscríbete ahora</a>
-    `;
-    container.appendChild(endCard);
-
-    // Añadir la firma Knon al final de todo
-    const footer = document.createElement('div');
-    footer.className = 'knon-footer';
-    // --- AQUÍ ESTÁ LA MAGIA DE LA FIRMA SEPARADA ---
-    footer.innerHTML = `Architecture by <span class="knon-signature">Knon</span> <span class="knon-eco">Ecosystem</span>`;
-    container.appendChild(footer);
-}
-
-// Iniciar el catálogo
-renderGallery(mockData);
-
+app.init();
