@@ -1,204 +1,98 @@
-/* =========================================
-   KNON DESIGN SYSTEM - CORE VARIABLES
-   ========================================= */
 :root {
-    --knon-bg: #030303;          /* Negro absoluto, ahorra batería en OLED */
-    --knon-surface: #0a0a0a;     /* Superficie para tarjetas */
-    --knon-accent: #f5f5f5;      /* Blanco puro */
-    --knon-brand: #00E5FF;       /* Cyan eléctrico */
-    --knon-text: #e0e0e0;        /* Gris claro */
-    --knon-muted: #666666;       /* Textos secundarios */
+    --knon-bg: #030303;
+    --knon-surface: #0a0a0a;
+    --knon-accent: #f5f5f5;
+    --knon-brand: #00E5FF;
+    --knon-text: #e0e0e0;
+    --knon-muted: #666666;
 }
 
-/* Reset y Tipografía */
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body, html {
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     background-color: var(--knon-bg);
     color: var(--knon-text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     overflow-x: hidden;
-    scroll-behavior: smooth;
 }
 
-/* =========================================
-   LA INMERSIÓN (Modo Manhwa Absoluto)
-   ========================================= */
-::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
+/* HEADER */
+.knon-header {
+    position: fixed; top: 0; width: 100%; height: 60px;
+    background: rgba(3, 3, 3, 0.95);
+    backdrop-filter: blur(10px);
+    display: flex; align-items: center; padding: 0 20px;
+    z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
-#gallery-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 500px; /* Ancho móvil */
-    margin: 0 auto;
-    background-color: var(--knon-surface);
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+.knon-header .logo { font-weight: 900; letter-spacing: 1px; color: var(--knon-brand); font-size: 1.2rem; }
+.knon-header .logo span { color: var(--knon-accent); font-weight: 300; margin-left: 5px; }
+
+/* GRID DE BIBLIOTECA (Estilo Rosty) */
+#main-content { padding: 80px 15px 100px; max-width: 800px; margin: 0 auto; }
+
+.knon-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
 }
 
-/* Estilos para imágenes estáticas simples */
-.media-item {
-    width: 100%;
-    display: block;
-    object-fit: cover;
-    background-color: var(--knon-bg);
-    min-height: 50vh;
-    margin-bottom: -1px; 
-    transition: opacity 0.5s ease;
-    opacity: 0;
-    animation: fadeIn 0.8s forwards;
+.knon-card {
+    background: var(--knon-surface);
+    border-radius: 12px; overflow: hidden;
+    position: relative; transition: transform 0.2s;
 }
 
-@keyframes fadeIn {
-    to { opacity: 1; }
+.knon-card:active { transform: scale(0.95); }
+
+.knon-card img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; }
+
+.knon-card .badge {
+    position: absolute; top: 10px; left: 10px;
+    background: var(--knon-brand); color: #000;
+    font-size: 0.65rem; font-weight: 900; padding: 3px 8px;
+    border-radius: 4px; text-transform: uppercase;
 }
 
-/* =========================================
-   HYBRID PLAYER: ESTILOS ESTRUCTURALES
-   ========================================= */
-/* El "Molde" que guarda el espacio cuando el video se autodestruye */
+.knon-card .info { padding: 10px; }
+.knon-card .info h3 { margin: 0; font-size: 0.9rem; color: var(--knon-accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.knon-card .info p { margin: 5px 0 0; font-size: 0.75rem; color: var(--knon-muted); }
+
+/* VISOR VERTICAL (El Reproductor Híbrido) */
+.viewer-mode { padding: 60px 0 0 !important; max-width: 500px !important; }
+
 .media-wrapper {
-    width: 100%;
-    position: relative;
-    background-color: var(--knon-bg);
-    margin-bottom: -1px;
-    aspect-ratio: 9 / 16; /* Formato vertical estándar de video */
-    overflow: hidden;
-    opacity: 0;
-    animation: fadeIn 0.8s forwards;
+    width: 100%; position: relative; aspect-ratio: 9/16;
+    background: #000; overflow: hidden; margin-bottom: -1px;
 }
 
-/* Las capas superpuestas */
-.webp-layer, .video-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity 0.4s ease;
+.webp-layer, .video-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s; }
+.webp-layer { z-index: 2; }
+.video-layer { z-index: 1; opacity: 0; }
+.video-ready .webp-layer { opacity: 0; pointer-events: none; }
+.video-ready .video-layer { opacity: 1; }
+
+/* NAV FLOTANTE */
+.knon-nav {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    width: 90%; max-width: 400px; height: 65px;
+    background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(20px);
+    border-radius: 20px; display: flex; justify-content: space-around;
+    align-items: center; border: 1px solid rgba(255,255,255,0.1); z-index: 1000;
 }
 
-/* El WebP animado (señuelo) va por encima siempre */
-.webp-layer {
-    z-index: 2;
-}
+.nav-item { display: flex; flex-direction: column; align-items: center; color: var(--knon-muted); }
+.nav-item svg { width: 24px; fill: currentColor; margin-bottom: 4px; }
+.nav-item span { font-size: 0.7rem; font-weight: bold; }
+.nav-item.active { color: var(--knon-brand); }
 
-/* El video va por debajo y arranca invisible */
-.video-layer {
-    z-index: 1;
-    opacity: 0; 
-}
-
-/* Clase de activación: El JS la inyecta para hacer la transición */
-.video-ready .webp-layer {
-    opacity: 0;
-    pointer-events: none; /* Permite tocar el video que está debajo */
-}
-
-.video-ready .video-layer {
-    opacity: 1;
-}
-
-/* =========================================
-   KNON CONVERSION CARD
-   ========================================= */
-.conversion-card {
-    padding: 60px 30px;
-    text-align: center;
-    width: 100%;
-    background: linear-gradient(180deg, transparent 0%, #050505 20%, #000000 100%);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 40vh;
-}
-
-.conversion-card h2 {
-    font-size: 1.8rem;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    color: var(--knon-accent);
-    margin-bottom: 10px;
-}
-
-.conversion-card p {
-    font-size: 1rem;
-    color: var(--knon-muted);
-    margin-bottom: 40px;
-    line-height: 1.5;
-    max-width: 80%;
-}
+/* FIRMA CALIGRÁFICA */
+.knon-footer { text-align: center; padding: 50px 20px; font-size: 0.7rem; color: var(--knon-muted); text-transform: uppercase; letter-spacing: 2px; }
+.knon-signature { display: inline-block; color: var(--knon-brand); font-family: "Lucida Handwriting", cursive; font-size: 1.4rem; text-transform: none; transform: rotate(-2deg); margin: 0 5px; }
 
 .btn-premium {
-    display: inline-block;
-    background-color: var(--knon-brand);
-    color: #000;
-    padding: 18px 40px;
-    text-decoration: none;
-    font-weight: 800;
-    font-size: 1.1rem;
-    border-radius: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+    display: block; width: 80%; margin: 40px auto; background: var(--knon-brand);
+    color: #000; padding: 18px; text-align: center; text-decoration: none;
+    font-weight: 900; border-radius: 10px; text-transform: uppercase;
 }
-
-.btn-premium:hover, .btn-premium:active {
-    transform: scale(1.05);
-    box-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
-}
-
-/* =========================================
-   KNON FOOTER & SIGNATURE (El Toque de Autor)
-   ========================================= */
-.knon-footer {
-    width: 100%;
-    text-align: center;
-    padding: 40px 0 30px; /* Un poco más de espacio arriba para que respire */
-    font-size: 0.7rem; /* Un pelín más pequeño para que la firma destaque */
-    color: var(--knon-muted);
-    background-color: #000;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    border-top: 1px solid rgba(255, 255, 255, 0.03); /* Separación sutil */
-}
-
-/* LA MAGIA: Tu firma caligráfica corrida */
-.knon-footer .knon-signature {
-    display: inline-block; /* Permite transformaciones como rotar un poco */
-    color: var(--knon-brand); /* Mantengo el cyan eléctrico para la identidad */
-    font-weight: normal; /* No bold, la caligrafía debe ser natural */
-    
-    /* Probamos con tipografías de sistema elegantes */
-    font-family: "Lucida Handwriting", "Brush Script MT", "Cursive", serif;
-    
-    font-size: 1.4rem; /* Hacemos la firma más grande que el texto que la rodea */
-    text-transform: none; /* ¡CRUCIAL! La firma debe tener mayúsculas y minúsculas naturales */
-    letter-spacing: 0px; /* Juntamos las letras para el efecto de caligrafía corrida */
-    
-    margin-left: 5px; /* Separación de 'Architecture by' */
-    margin-right: 5px; /* Separación de 'Ecosystem' */
-    
-    /* Un pequeño detalle de diseño: girarla 2 grados a la izquierda para que parezca firmada con prisa */
-    transform: rotate(-2deg); 
-}
-
-/* El resto del texto que sigue después de la firma */
-.knon-footer .knon-eco {
-    font-weight: bold;
-    /* Mantiene los estilos por defecto del footer (uppercase, etc) */
-}
-
