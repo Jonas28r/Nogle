@@ -30,7 +30,7 @@ body, html {
 
 .logo-nogle {
     font-family: 'Playfair Display', serif;
-    font-size: 2.5rem; font-weight: 900; letter-spacing: 4px; font-style: italic;
+    font-size: 2.6rem; font-weight: 900; letter-spacing: 4px; font-style: italic;
     line-height: 1; text-shadow: 0 0 15px rgba(255, 51, 102, 0.3);
 }
 
@@ -40,18 +40,6 @@ body, html {
 .logo-nogle .l-3 { color: #FF1493; }
 .logo-nogle .l-4 { color: #DA70D6; }
 .logo-nogle .l-5 { color: #FF99CC; }
-
-/* LA MARIPOSA NÍTIDA (Sin brillo neón para evitar la distorsión) */
-.butterfly {
-    position: absolute; 
-    top: -12px; /* Ajustada posición */
-    right: -28px;
-    width: 32px; /* Un poco más grande para claridad */
-    height: 32px; 
-    fill: #FF99CC; /* Color Sólido */
-    /* Eliminado filter: drop-shadow por completo */
-    transform: rotate(15deg);
-}
 
 .logo-sub {
     font-size: 0.65rem; color: #DA70D6; letter-spacing: 3px;
