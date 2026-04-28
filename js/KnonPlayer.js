@@ -140,7 +140,8 @@ function renderGallery(data) {
     // Añadir la firma Knon al final de todo
     const footer = document.createElement('div');
     footer.className = 'knon-footer';
-    footer.innerHTML = `Architecture by <span>Knon Ecosystem</span>`;
+    // --- AQUÍ ESTÁ LA MAGIA DE LA FIRMA SEPARADA ---
+    footer.innerHTML = `Architecture by <span class="knon-signature">Knon</span> <span class="knon-eco">Ecosystem</span>`;
     container.appendChild(footer);
 }
 
