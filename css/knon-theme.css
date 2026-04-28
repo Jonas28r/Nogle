@@ -1,10 +1,13 @@
+/* Importación de Google Fonts: Playfair Display para el Logo */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900&display=swap');
+
 :root {
     --knon-bg: #030303;
     --knon-surface: #0a0a0a;
     --knon-accent: #f5f5f5;
-    --knon-brand: #00E5FF;
+    --knon-brand: #FF3366; /* Actualizado al tono femenino principal */
     --knon-text: #e0e0e0;
-    --knon-muted: #666666;
+    --knon-muted: #888888;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -17,20 +20,67 @@ body, html {
     overflow-x: hidden;
 }
 
-/* HEADER */
+/* =========================================
+   HEADER: NOGLE OFICIAL
+   ========================================= */
 .knon-header {
-    position: fixed; top: 0; width: 100%; height: 60px;
-    background: rgba(3, 3, 3, 0.95);
-    backdrop-filter: blur(10px);
-    display: flex; align-items: center; padding: 0 20px;
-    z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: fixed; top: 0; width: 100%; height: 85px;
+    background: rgba(3, 3, 3, 0.85); backdrop-filter: blur(15px);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 100; border-bottom: 1px solid rgba(255, 51, 102, 0.15);
 }
 
-.knon-header .logo { font-weight: 900; letter-spacing: 1px; color: var(--knon-brand); font-size: 1.2rem; }
-.knon-header .logo span { color: var(--knon-accent); font-weight: 300; margin-left: 5px; }
+.logo-wrapper {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
 
-/* GRID DE BIBLIOTECA (Estilo Rosty) */
-#main-content { padding: 80px 15px 100px; max-width: 800px; margin: 0 auto; }
+.logo-nogle {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    font-style: italic;
+    line-height: 1.1;
+    text-shadow: 0 0 15px rgba(255, 51, 102, 0.3);
+}
+
+.logo-nogle span { position: relative; display: inline-block; }
+
+/* La paleta de colores oficial */
+.logo-nogle .l-1 { color: #FF3366; } /* Rosa Vibrante */
+.logo-nogle .l-2 { color: #B833FF; } /* Púrpura Intenso */
+.logo-nogle .l-3 { color: #FF1493; } /* Deep Pink */
+.logo-nogle .l-4 { color: #DA70D6; } /* Orquídea */
+.logo-nogle .l-5 { color: #FF99CC; } /* Rosa Pastel */
+
+/* La Mariposa en la E */
+.butterfly {
+    position: absolute;
+    top: -10px;
+    right: -25px;
+    width: 26px;
+    height: 26px;
+    fill: #FF99CC; /* Rosa que hace match con la letra E */
+    filter: drop-shadow(0 0 8px rgba(255, 153, 204, 0.9));
+    transform: rotate(15deg);
+}
+
+/* Subtítulo */
+.logo-sub {
+    font-size: 0.65rem;
+    color: #DA70D6;
+    letter-spacing: 3px;
+    margin-top: 2px;
+    font-weight: 800;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+/* =========================================
+   GRID DE BIBLIOTECA
+   ========================================= */
+/* Ajuste de padding por el nuevo tamaño del cabezal */
+#main-content { padding: 95px 15px 100px; max-width: 800px; margin: 0 auto; }
 
 .knon-grid {
     display: grid;
@@ -50,7 +100,7 @@ body, html {
 
 .knon-card .badge {
     position: absolute; top: 10px; left: 10px;
-    background: var(--knon-brand); color: #000;
+    background: var(--knon-brand); color: #fff;
     font-size: 0.65rem; font-weight: 900; padding: 3px 8px;
     border-radius: 4px; text-transform: uppercase;
 }
@@ -59,8 +109,10 @@ body, html {
 .knon-card .info h3 { margin: 0; font-size: 0.9rem; color: var(--knon-accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .knon-card .info p { margin: 5px 0 0; font-size: 0.75rem; color: var(--knon-muted); }
 
-/* VISOR VERTICAL (El Reproductor Híbrido) */
-.viewer-mode { padding: 60px 0 0 !important; max-width: 500px !important; }
+/* =========================================
+   VISOR VERTICAL
+   ========================================= */
+.viewer-mode { padding: 85px 0 0 !important; max-width: 500px !important; }
 
 .media-wrapper {
     width: 100%; position: relative; aspect-ratio: 9/16;
@@ -73,7 +125,9 @@ body, html {
 .video-ready .webp-layer { opacity: 0; pointer-events: none; }
 .video-ready .video-layer { opacity: 1; }
 
-/* NAV FLOTANTE */
+/* =========================================
+   NAV FLOTANTE
+   ========================================= */
 .knon-nav {
     position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
     width: 90%; max-width: 400px; height: 65px;
@@ -87,12 +141,14 @@ body, html {
 .nav-item span { font-size: 0.7rem; font-weight: bold; }
 .nav-item.active { color: var(--knon-brand); }
 
-/* FIRMA CALIGRÁFICA */
+/* =========================================
+   FIRMA CALIGRÁFICA (VISOR)
+   ========================================= */
 .knon-footer { text-align: center; padding: 50px 20px; font-size: 0.7rem; color: var(--knon-muted); text-transform: uppercase; letter-spacing: 2px; }
-.knon-signature { display: inline-block; color: var(--knon-brand); font-family: "Lucida Handwriting", cursive; font-size: 1.4rem; text-transform: none; transform: rotate(-2deg); margin: 0 5px; }
+.knon-signature { display: inline-block; color: #00E5FF; font-family: "Lucida Handwriting", cursive; font-size: 1.4rem; text-transform: none; transform: rotate(-2deg); margin: 0 5px; }
 
 .btn-premium {
     display: block; width: 80%; margin: 40px auto; background: var(--knon-brand);
-    color: #000; padding: 18px; text-align: center; text-decoration: none;
+    color: #fff; padding: 18px; text-align: center; text-decoration: none;
     font-weight: 900; border-radius: 10px; text-transform: uppercase;
 }
