@@ -1,0 +1,178 @@
+/* =========================================
+   KNON DESIGN SYSTEM - CORE VARIABLES
+   ========================================= */
+:root {
+    --knon-bg: #030303;          /* Negro absoluto, ahorra batería en OLED */
+    --knon-surface: #0a0a0a;     /* Superficie para tarjetas */
+    --knon-accent: #f5f5f5;      /* Blanco puro */
+    --knon-brand: #00E5FF;       /* Cyan eléctrico */
+    --knon-text: #e0e0e0;        /* Gris claro */
+    --knon-muted: #666666;       /* Textos secundarios */
+}
+
+/* Reset y Tipografía */
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    background-color: var(--knon-bg);
+    color: var(--knon-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+/* =========================================
+   LA INMERSIÓN (Modo Manhwa Absoluto)
+   ========================================= */
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+#gallery-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 500px; /* Ancho móvil */
+    margin: 0 auto;
+    background-color: var(--knon-surface);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+}
+
+/* Estilos para imágenes estáticas simples */
+.media-item {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+    background-color: var(--knon-bg);
+    min-height: 50vh;
+    margin-bottom: -1px; 
+    transition: opacity 0.5s ease;
+    opacity: 0;
+    animation: fadeIn 0.8s forwards;
+}
+
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+/* =========================================
+   HYBRID PLAYER: ESTILOS ESTRUCTURALES
+   ========================================= */
+/* El "Molde" que guarda el espacio cuando el video se autodestruye */
+.media-wrapper {
+    width: 100%;
+    position: relative;
+    background-color: var(--knon-bg);
+    margin-bottom: -1px;
+    aspect-ratio: 9 / 16; /* Formato vertical estándar de video */
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeIn 0.8s forwards;
+}
+
+/* Las capas superpuestas */
+.webp-layer, .video-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.4s ease;
+}
+
+/* El WebP animado (señuelo) va por encima siempre */
+.webp-layer {
+    z-index: 2;
+}
+
+/* El video va por debajo y arranca invisible */
+.video-layer {
+    z-index: 1;
+    opacity: 0; 
+}
+
+/* Clase de activación: El JS la inyecta para hacer la transición */
+.video-ready .webp-layer {
+    opacity: 0;
+    pointer-events: none; /* Permite tocar el video que está debajo */
+}
+
+.video-ready .video-layer {
+    opacity: 1;
+}
+
+/* =========================================
+   KNON CONVERSION CARD
+   ========================================= */
+.conversion-card {
+    padding: 60px 30px;
+    text-align: center;
+    width: 100%;
+    background: linear-gradient(180deg, transparent 0%, #050505 20%, #000000 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 40vh;
+}
+
+.conversion-card h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--knon-accent);
+    margin-bottom: 10px;
+}
+
+.conversion-card p {
+    font-size: 1rem;
+    color: var(--knon-muted);
+    margin-bottom: 40px;
+    line-height: 1.5;
+    max-width: 80%;
+}
+
+.btn-premium {
+    display: inline-block;
+    background-color: var(--knon-brand);
+    color: #000;
+    padding: 18px 40px;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+}
+
+.btn-premium:hover, .btn-premium:active {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
+}
+
+.knon-footer {
+    width: 100%;
+    text-align: center;
+    padding: 30px 0;
+    font-size: 0.75rem;
+    color: var(--knon-muted);
+    background-color: #000;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.knon-footer span {
+    color: var(--knon-brand);
+    font-weight: bold;
+}
