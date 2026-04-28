@@ -161,18 +161,44 @@ body, html {
     box-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
 }
 
+/* =========================================
+   KNON FOOTER & SIGNATURE (El Toque de Autor)
+   ========================================= */
 .knon-footer {
     width: 100%;
     text-align: center;
-    padding: 30px 0;
-    font-size: 0.75rem;
+    padding: 40px 0 30px; /* Un poco más de espacio arriba para que respire */
+    font-size: 0.7rem; /* Un pelín más pequeño para que la firma destaque */
     color: var(--knon-muted);
     background-color: #000;
     letter-spacing: 2px;
     text-transform: uppercase;
+    border-top: 1px solid rgba(255, 255, 255, 0.03); /* Separación sutil */
 }
 
-.knon-footer span {
-    color: var(--knon-brand);
-    font-weight: bold;
+/* LA MAGIA: Tu firma caligráfica corrida */
+.knon-footer .knon-signature {
+    display: inline-block; /* Permite transformaciones como rotar un poco */
+    color: var(--knon-brand); /* Mantengo el cyan eléctrico para la identidad */
+    font-weight: normal; /* No bold, la caligrafía debe ser natural */
+    
+    /* Probamos con tipografías de sistema elegantes */
+    font-family: "Lucida Handwriting", "Brush Script MT", "Cursive", serif;
+    
+    font-size: 1.4rem; /* Hacemos la firma más grande que el texto que la rodea */
+    text-transform: none; /* ¡CRUCIAL! La firma debe tener mayúsculas y minúsculas naturales */
+    letter-spacing: 0px; /* Juntamos las letras para el efecto de caligrafía corrida */
+    
+    margin-left: 5px; /* Separación de 'Architecture by' */
+    margin-right: 5px; /* Separación de 'Ecosystem' */
+    
+    /* Un pequeño detalle de diseño: girarla 2 grados a la izquierda para que parezca firmada con prisa */
+    transform: rotate(-2deg); 
 }
+
+/* El resto del texto que sigue después de la firma */
+.knon-footer .knon-eco {
+    font-weight: bold;
+    /* Mantiene los estilos por defecto del footer (uppercase, etc) */
+}
+
