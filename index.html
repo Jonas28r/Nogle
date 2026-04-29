@@ -119,8 +119,8 @@
     </main>
 
     <script>
-        // CONFIGURACIÓN: Aquí pegarás la URL de tu Worker el fin de semana
-        const WORKER_URL = 'https://tu-worker.workers.dev/';
+        // URL de tu Worker de Cloudflare ya vinculada
+        const WORKER_URL = 'https://nogle-knon.villajonas09.workers.dev/';
 
         async function initCatalog() {
             const container = document.getElementById('main-catalog');
@@ -132,10 +132,11 @@
                 container.innerHTML = ''; // Limpiar loader
 
                 modelos.forEach(m => {
+                    // Aquí se cambió visor.html por visor
                     const card = `
-                        <a href="visor.html?m=${m.id}" class="knon-card">
+                        <a href="visor?m=${m.id}" class="knon-card">
                             <div class="img-container">
-                                <img src="${m.cover}" alt="${m.name}" loading="lazy">
+                                <img src="${m.cover}" alt="${m.name}" loading="lazy" crossorigin="anonymous">
                                 <div class="watermark-center">NOGLE</div>
                                 <div class="badge">PREMIUM</div>
                             </div>
@@ -149,14 +150,13 @@
                 });
 
             } catch (error) {
-                // Si el Worker no está listo, mostramos un aviso elegante
                 container.innerHTML = `
                     <div id="loader" style="color:#555;">
                         SISTEMA EN MANTENIMIENTO<br>
                         <small>Estamos preparando contenido nuevo</small>
                     </div>
                 `;
-                console.log("Esperando conexión con Cloudflare R2...");
+                console.error("Error al conectar con el ecosistema:", error);
             }
         }
 
