@@ -5,22 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NOGLE | Visor Exclusivo</title>
     <link rel="stylesheet" href="css/knon-theme.css">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:italic&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <style>
         /* Estilos específicos del Visor de Lujo */
-        body { background-color: #030303; -webkit-user-select: none; user-select: none; }
+        body { background-color: #030303; -webkit-user-select: none; user-select: none; margin: 0; }
         
         .sc-protect { transition: filter 0.3s ease, opacity 0.3s ease; }
         .anti-screenshot-active { filter: blur(20px) brightness(0.1); opacity: 0.2; }
 
         /* Contenedor de Medios */
-        #gallery-container { width: 100%; display: flex; flex-direction: column; gap: 2px; padding-top: 85px; }
+        #gallery-container { width: 100%; display: flex; flex-direction: column; gap: 2px; padding-top: 85px; min-height: 100vh;}
         .media-item { width: 100%; position: relative; background: #080808; overflow: hidden; }
         .media-item img { width: 100%; display: block; pointer-events: none; }
         
         /* Marca de Agua Dinámica */
         .watermark {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg);
-            font-family: 'Playfair Display', serif; font-weight: 900; color: rgba(255,255,255,0.12);
+            font-family: 'Inter', sans-serif; font-weight: 900; color: rgba(255,255,255,0.12);
             font-size: 2.5rem; pointer-events: none; z-index: 5; letter-spacing: 5px;
         }
 
@@ -29,15 +30,14 @@
             padding: 50px 20px; text-align: center; background: linear-gradient(to bottom, #030303, #0a0a0a);
             border-top: 1px solid rgba(255, 51, 102, 0.1);
         }
-        .rating-title { font-family: 'Playfair Display', serif; font-style: italic; color: #f5f5f5; font-size: 1.3rem; margin-bottom: 15px; }
+        .rating-title { font-family: 'Instrument Serif', serif; font-style: italic; color: #f5f5f5; font-size: 1.3rem; margin-bottom: 15px; }
         .stars { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
         .star { font-size: 2.2rem; color: #222; cursor: pointer; transition: all 0.3s; }
         .star.active { color: #FF3366; text-shadow: 0 0 15px rgba(255, 51, 102, 0.6); transform: scale(1.2); }
 
-        /* Botón de Suscripción (Oculto por defecto) */
         #btn-subscribe {
             display: none; width: 85%; max-width: 350px; margin: 0 auto;
-            background: linear-gradient(90deg, #FF3366, #B833FF); color: white;
+            background: linear-gradient(90deg, #FF3366, #9400d3); color: white;
             padding: 18px; border-radius: 15px; text-decoration: none; font-weight: 900;
             text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem;
             animation: slideUp 0.5s ease forwards;
@@ -45,17 +45,27 @@
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Navegación Inteligente */
+        /* Navegación Inteligente y Título Degradado */
         .nav-header {
             position: fixed; top: 0; width: 100%; height: 75px; z-index: 1000;
             background: rgba(3, 3, 3, 0.8); backdrop-filter: blur(15px);
             display: flex; align-items: center; padding: 0 20px; justify-content: space-between;
         }
         .btn-back { color: #f5f5f5; text-decoration: none; font-size: 1.5rem; }
+        
+        .logo-nogle {
+            font-family: 'Instrument Serif', serif;
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(90deg, #ff1493 0%, #9400d3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text; color: transparent;
+            text-shadow: 0 0 15px rgba(148, 0, 211, 0.4);
+        }
 
-        /* Botón Siguiente Dinámico */
         #btn-next {
-            display: none; margin: 30px auto; color: #DA70D6; border: 1px solid #DA70D6;
+            display: none; margin: 30px auto; color: #ff1493; border: 1px solid #ff1493;
             padding: 10px 25px; border-radius: 30px; font-size: 0.8rem; font-weight: bold;
             background: transparent; text-transform: uppercase; letter-spacing: 2px;
         }
@@ -65,10 +75,9 @@
 
     <header class="nav-header">
         <a href="index.html" class="btn-back">✕</a>
-        <div class="logo-nogle" style="font-size: 1.5rem;">
-            <span class="l-1">N</span><span class="l-2">O</span><span class="l-3">G</span><span class="l-4">L</span><span class="l-5">E</span>
-        </div>
-        <div style="width: 30px;"></div> </header>
+        <h1 class="logo-nogle">NOGLE</h1>
+        <div style="width: 30px;"></div> 
+    </header>
 
     <main id="gallery-container">
         </main>
@@ -78,39 +87,27 @@
     <section id="rating-section">
         <p class="rating-title">¿Te gustó esta modelo?</p>
         <div class="stars" id="star-box">
-            <span class="star" onclick="vote(1)">★</span>
-            <span class="star" onclick="vote(2)">★</span>
-            <span class="star" onclick="vote(3)">★</span>
-            <span class="star" onclick="vote(4)">★</span>
+            <span class="star" onclick="vote(1)">★</span><span class="star" onclick="vote(2)">★</span>
+            <span class="star" onclick="vote(3)">★</span><span class="star" onclick="vote(4)">★</span>
             <span class="star" onclick="vote(5)">★</span>
         </div>
-
-        <a href="https://tupagina.com/premium" id="btn-subscribe">Suscríbete para ver más</a>
+        <a href="#" id="btn-subscribe">Suscríbete para ver más</a>
     </section>
 
     <footer style="padding: 40px 0; text-align: center;">
-        <div class="knon-footer">Architecture by <span class="knon-signature">Knon</span> ECOSYSTEM</div>
+        <div style="color:#555; font-size:12px;">Architecture by Knon ECOSYSTEM</div>
     </footer>
 
     <script src="js/KnonPlayer.js"></script>
     <script>
-        // Lógica de Votación y Revelación
         function vote(n) {
             const stars = document.querySelectorAll('.star');
             stars.forEach((s, index) => {
-                if(index < n) s.classList.add('active');
-                else s.classList.remove('active');
+                if(index < n) s.classList.add('active'); else s.classList.remove('active');
             });
-            
-            // Revelar botón de suscripción con elegancia
-            const btn = document.getElementById('btn-subscribe');
-            btn.style.display = 'block';
-            
-            // Vibración táctil si el móvil lo soporta
+            document.getElementById('btn-subscribe').style.display = 'block';
             if(window.navigator.vibrate) window.navigator.vibrate(50);
         }
-
-        // Seguridad Anti-Captura (Heredada de Rosty)
         document.addEventListener('visibilitychange', () => {
             const body = document.getElementById('nogle-visor');
             if (document.visibilityState === 'hidden') body.classList.add('anti-screenshot-active');
