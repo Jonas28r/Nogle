@@ -11,12 +11,9 @@
             --dark: #0a0a0a;
             --accent: #ff3366;
             
-            /* Paleta Femenina Premium para las letras */
-            --nogle-n: #FF66B2; /* Rosa Brillante */
-            --nogle-o: #FF99CC; /* Rosa Pastel */
-            --nogle-g: #D4AF37; /* Dorado Nogle */
-            --nogle-l: #CC99FF; /* Lavanda suave */
-            --nogle-e: #FF3366; /* Rosa Accent */
+            /* Paleta de Degradado Premium de la Imagen */
+            --nogle-pink-hot: #ff1493;   /* Rosa intenso de la imagen */
+            --nogle-purple-rich: #9400d3; /* Morado vibrante de la imagen */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -33,24 +30,24 @@
             text-align: center;
         }
 
-        /* Estilo base para el título */
+        /* Título modificado para el efecto de degradado interior (sin mariposa) */
         header h1 {
             font-family: 'Instrument Serif', serif;
             font-size: 3.5rem;
             letter-spacing: -1px;
-            /* Quitamos el degradado antiguo metálico */
-            background: none;
-            -webkit-background-clip: initial;
-            -webkit-text-fill-color: initial;
-        }
+            
+            /* Definición del degradado rosa a morado */
+            background: linear-gradient(90deg, var(--nogle-pink-hot) 0%, var(--nogle-purple-rich) 100%);
+            
+            /* Técnica para recortar el fondo al texto */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text; /* Sintaxis estándar para compatibilidad */
+            color: transparent;     /* Sintaxis estándar para compatibilidad */
 
-        /* Colores individuales para cada letra con brillo elegante */
-        header h1 span { text-shadow: 0 0 10px rgba(255,255,255,0.2); }
-        .l-n { color: var(--nogle-n); }
-        .l-o { color: var(--nogle-o); }
-        .l-g { color: var(--nogle-g); }
-        .l-l { color: var(--nogle-l); }
-        .l-e { color: var(--nogle-e); }
+            /* Un ligero brillo text-shadow para que resalte más como en la imagen */
+            text-shadow: 0 0 15px rgba(148, 0, 211, 0.4);
+        }
 
         /* La Cuadrícula Mágica */
         .knon-grid {
@@ -128,9 +125,7 @@
 <body>
 
     <header>
-        <h1>
-            <span class="l-n">N</span><span class="l-o">O</span><span class="l-g">G</span><span class="l-l">L</span><span class="l-e">E</span>
-        </h1>
+        <h1>NOGLE</h1>
     </header>
 
     <main class="knon-grid" id="main-catalog">
