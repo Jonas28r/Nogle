@@ -10,6 +10,13 @@
             --gold: #d4af37;
             --dark: #0a0a0a;
             --accent: #ff3366;
+            
+            /* Paleta Femenina Premium para las letras */
+            --nogle-n: #FF66B2; /* Rosa Brillante */
+            --nogle-o: #FF99CC; /* Rosa Pastel */
+            --nogle-g: #D4AF37; /* Dorado Nogle */
+            --nogle-l: #CC99FF; /* Lavanda suave */
+            --nogle-e: #FF3366; /* Rosa Accent */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -26,14 +33,24 @@
             text-align: center;
         }
 
+        /* Estilo base para el título */
         header h1 {
             font-family: 'Instrument Serif', serif;
             font-size: 3.5rem;
             letter-spacing: -1px;
-            background: linear-gradient(to bottom, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            /* Quitamos el degradado antiguo metálico */
+            background: none;
+            -webkit-background-clip: initial;
+            -webkit-text-fill-color: initial;
         }
+
+        /* Colores individuales para cada letra con brillo elegante */
+        header h1 span { text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .l-n { color: var(--nogle-n); }
+        .l-o { color: var(--nogle-o); }
+        .l-g { color: var(--nogle-g); }
+        .l-l { color: var(--nogle-l); }
+        .l-e { color: var(--nogle-e); }
 
         /* La Cuadrícula Mágica */
         .knon-grid {
@@ -111,7 +128,9 @@
 <body>
 
     <header>
-        <h1>Nogle</h1>
+        <h1>
+            <span class="l-n">N</span><span class="l-o">O</span><span class="l-g">G</span><span class="l-l">L</span><span class="l-e">E</span>
+        </h1>
     </header>
 
     <main class="knon-grid" id="main-catalog">
@@ -132,7 +151,7 @@
                 container.innerHTML = ''; // Limpiar loader
 
                 modelos.forEach(m => {
-                    // Aquí se cambió visor.html por visor
+                    // Enlace limpio sin .html
                     const card = `
                         <a href="visor?m=${m.id}" class="knon-card">
                             <div class="img-container">
