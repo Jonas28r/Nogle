@@ -3,8 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
     <title>NOGLE | Premium Exclusive</title>
+    <meta name="description" content="Catálogo exclusivo de contenido multimedia premium.">
+    
+    <meta name="rating" content="adult">
+    <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
+    
+    <meta http-equiv="Cache-Control" content="no-store">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "NOGLE",
+      "description": "Plataforma premium exclusiva",
+      "isFamilyFriendly": "False"
+    }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:italic&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --gold: #d4af37;
@@ -23,6 +41,9 @@
             color: white;
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         header {
@@ -30,22 +51,15 @@
             text-align: center;
         }
 
-        /* Título modificado para el efecto de degradado interior (sin mariposa) */
         header h1 {
             font-family: 'Instrument Serif', serif;
             font-size: 3.5rem;
             letter-spacing: -1px;
-            
-            /* Definición del degradado rosa a morado */
             background: linear-gradient(90deg, var(--nogle-pink-hot) 0%, var(--nogle-purple-rich) 100%);
-            
-            /* Técnica para recortar el fondo al texto */
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text; /* Sintaxis estándar para compatibilidad */
-            color: transparent;     /* Sintaxis estándar para compatibilidad */
-
-            /* Un ligero brillo text-shadow para que resalte más como en la imagen */
+            background-clip: text;
+            color: transparent;
             text-shadow: 0 0 15px rgba(148, 0, 211, 0.4);
         }
 
@@ -57,6 +71,7 @@
             padding: 15px;
             max-width: 800px;
             margin: 0 auto;
+            flex-grow: 1; /* Permite que el contenido empuje el footer hacia abajo */
         }
 
         .knon-card {
@@ -82,7 +97,6 @@
             object-fit: cover;
         }
 
-        /* Marca de Agua en la Portada */
         .watermark-center {
             position: absolute;
             top: 50%;
@@ -108,10 +122,11 @@
         }
 
         .info { padding: 12px; }
-        .info h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        
+        /* H2 en lugar de H3 para mejor semántica SEO en el listado */
+        .info h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: normal; }
         .info p { font-size: 11px; color: #777; }
 
-        /* Loader */
         #loader {
             grid-column: 1 / -1;
             text-align: center;
@@ -119,6 +134,55 @@
             font-size: 12px;
             color: var(--gold);
             letter-spacing: 2px;
+        }
+
+        /* ========================================== */
+        /* ESTILOS DEL FOOTER PROFESIONAL */
+        /* ========================================== */
+        .nogle-footer {
+            margin-top: 50px;
+            padding: 40px 20px 20px;
+            background-color: #070707;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--nogle-pink-hot);
+        }
+
+        .footer-copyright {
+            color: #444;
+            font-size: 11px;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-signature {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            /* Color natural y relajado (Piedra/Arena Suave) */
+            color: #bbaea0; 
+            letter-spacing: 1px;
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -132,8 +196,21 @@
         <div id="loader">CONECTANDO CON EL ECOSISTEMA...</div>
     </main>
 
+    <footer class="nogle-footer">
+        <div class="footer-links">
+            <a href="/privacy">Políticas de Privacidad</a>
+            <a href="/terms">Términos de Uso</a>
+            <a href="/dmca">DMCA</a>
+        </div>
+        <div class="footer-copyright">
+            &copy; 2026 NOGLE. Todos los derechos reservados.
+        </div>
+        <div class="footer-signature">
+            By Knon
+        </div>
+    </footer>
+
     <script>
-        // URL de tu Worker de Cloudflare ya vinculada
         const WORKER_URL = 'https://nogle-knon.villajonas09.workers.dev/';
 
         async function initCatalog() {
@@ -143,19 +220,20 @@
                 const response = await fetch(WORKER_URL);
                 const modelos = await response.json();
                 
-                container.innerHTML = ''; // Limpiar loader
+                container.innerHTML = ''; 
 
                 modelos.forEach(m => {
-                    // Enlace limpio sin .html
+                    // Semántica SEO: Cambiado el <h3> de la tarjeta a <h2>. 
+                    // El atributo alt se nutre de la API dinámicamente.
                     const card = `
                         <a href="visor?m=${m.id}" class="knon-card">
                             <div class="img-container">
-                                <img src="${m.cover}" alt="${m.name}" loading="lazy" crossorigin="anonymous">
+                                <img src="${m.cover}" alt="Contenido exclusivo de ${m.name}" loading="lazy" crossorigin="anonymous">
                                 <div class="watermark-center">NOGLE</div>
                                 <div class="badge">PREMIUM</div>
                             </div>
                             <div class="info">
-                                <h3>${m.name}</h3>
+                                <h2>${m.name}</h2>
                                 <p>VER CONTENIDO</p>
                             </div>
                         </a>
