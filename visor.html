@@ -4,19 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NOGLE | Visor Exclusivo</title>
+    
+    <meta name="description" content="Visor multimedia exclusivo. Contenido premium de alta calidad.">
+    
+    <meta name="rating" content="adult">
+    <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
+    
+    <meta http-equiv="Cache-Control" content="no-store">
     <link rel="stylesheet" href="css/knon-theme.css">
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:italic&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    
     <style>
         /* Estilos específicos del Visor de Lujo */
-        body { background-color: #030303; -webkit-user-select: none; user-select: none; margin: 0; }
+        body { background-color: #030303; -webkit-user-select: none; user-select: none; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
         
         .sc-protect { transition: filter 0.3s ease, opacity 0.3s ease; }
         .anti-screenshot-active { filter: blur(20px) brightness(0.1); opacity: 0.2; }
 
         /* Contenedor de Medios */
-        #gallery-container { width: 100%; display: flex; flex-direction: column; gap: 2px; padding-top: 85px; min-height: 100vh;}
+        #gallery-container { width: 100%; display: flex; flex-direction: column; gap: 2px; padding-top: 85px; flex-grow: 1; }
         .media-item { width: 100%; position: relative; background: #080808; overflow: hidden; }
-        .media-item img { width: 100%; display: block; pointer-events: none; }
+        .media-item img, .media-item video { width: 100%; display: block; pointer-events: none; }
         
         /* Marca de Agua Dinámica */
         .watermark {
@@ -69,6 +77,54 @@
             padding: 10px 25px; border-radius: 30px; font-size: 0.8rem; font-weight: bold;
             background: transparent; text-transform: uppercase; letter-spacing: 2px;
         }
+
+        /* ========================================== */
+        /* ESTILOS DEL FOOTER PROFESIONAL */
+        /* ========================================== */
+        .nogle-footer {
+            padding: 40px 20px 20px;
+            background-color: #070707;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #ff1493;
+        }
+
+        .footer-copyright {
+            color: #444;
+            font-size: 11px;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-signature {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            /* Color natural y relajado (Piedra/Arena Suave) */
+            color: #bbaea0; 
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body class="sc-protect" id="nogle-visor">
@@ -85,7 +141,7 @@
     <button id="btn-next" onclick="loadMore()">Cargar más contenido</button>
 
     <section id="rating-section">
-        <p class="rating-title">¿Te gustó esta modelo?</p>
+        <p class="rating-title">¿Te gustó el contenido?</p>
         <div class="stars" id="star-box">
             <span class="star" onclick="vote(1)">★</span><span class="star" onclick="vote(2)">★</span>
             <span class="star" onclick="vote(3)">★</span><span class="star" onclick="vote(4)">★</span>
@@ -94,11 +150,22 @@
         <a href="#" id="btn-subscribe">Suscríbete para ver más</a>
     </section>
 
-    <footer style="padding: 40px 0; text-align: center;">
-        <div style="color:#555; font-size:12px;">Architecture by Knon ECOSYSTEM</div>
+    <footer class="nogle-footer">
+        <div class="footer-links">
+            <a href="/privacy">Políticas de Privacidad</a>
+            <a href="/terms">Términos de Uso</a>
+            <a href="/dmca">DMCA</a>
+        </div>
+        <div class="footer-copyright">
+            &copy; 2026 NOGLE. Todos los derechos reservados.
+        </div>
+        <div class="footer-signature">
+            By Knon
+        </div>
     </footer>
 
     <script src="js/KnonPlayer.js"></script>
+    
     <script>
         function vote(n) {
             const stars = document.querySelectorAll('.star');
@@ -108,11 +175,15 @@
             document.getElementById('btn-subscribe').style.display = 'block';
             if(window.navigator.vibrate) window.navigator.vibrate(50);
         }
+        
+        // Protección anti-screenshot mediante blur
         document.addEventListener('visibilitychange', () => {
             const body = document.getElementById('nogle-visor');
             if (document.visibilityState === 'hidden') body.classList.add('anti-screenshot-active');
             else setTimeout(() => body.classList.remove('anti-screenshot-active'), 400);
         });
+        
+        // Deshabilitar click derecho
         document.addEventListener('contextmenu', e => e.preventDefault());
     </script>
 </body>
