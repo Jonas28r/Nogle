@@ -35,22 +35,22 @@ const KnonPlayer = {
                 return;
             }
 
-            // Array para almacenar los datos estructurados dinámicamente
             const schemaItems = [];
             const modelName = this.formatName(this.currentModel);
+            
+            // Extraer la primera imagen para usarla como portada dinámica al compartir el link
+            const firstImageSrc = data.items.find(i => i.type === 'image')?.src || 'https://nogle.vercel.app/logo-nogle.png';
 
             data.items.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'media-item';
 
                 if (item.type === 'image') {
-                    // Atributo 'alt' dinámico para indexación de palabras clave
                     div.innerHTML = `
                         <img src="${item.src}" loading="lazy" crossorigin="anonymous" alt="${modelName} - Contenido exclusivo Nogle">
                         <div class="watermark">NOGLE</div>
                     `;
                     
-                    // Construimos el schema para esta imagen
                     schemaItems.push({
                         "@type": "ImageObject",
                         "contentUrl": item.src,
@@ -62,9 +62,6 @@ const KnonPlayer = {
                     });
 
                 } else if (item.type === 'video') {
-                    // Lógica híbrida preparada para SEO y rendimiento
-                    // preload="none" evita descargar el video hasta que el usuario le da play
-                    // el poster en WebP es vital para los Core Web Vitals
                     const posterUrl = item.poster || 'default-poster.webp';
                     
                     div.innerHTML = `
@@ -72,7 +69,6 @@ const KnonPlayer = {
                         <div class="watermark">NOGLE</div>
                     `;
 
-                    // Construimos el schema estricto para video adulto
                     schemaItems.push({
                         "@type": "VideoObject",
                         "name": `Vídeo exclusivo de ${modelName}`,
@@ -87,8 +83,8 @@ const KnonPlayer = {
                 container.appendChild(div);
             });
 
-            // Inyectamos los metadatos JSON-LD estructurados en el Head
-            this.injectSEO(schemaItems, modelName);
+            // Inyectamos todo el SEO dinámico (Schema, Canonical y Open Graph)
+            this.injectSEO(schemaItems, modelName, firstImageSrc);
 
             this.initObserver();
 
@@ -98,8 +94,8 @@ const KnonPlayer = {
         }
     },
 
-    injectSEO(schemaItems, modelName) {
-        // Creamos la galería global que engloba todas las fotos y vídeos
+    injectSEO(schemaItems, modelName, firstImageSrc) {
+        // 1. Inyección de JSON-LD (Schema.org)
         const schema = {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
@@ -113,16 +109,43 @@ const KnonPlayer = {
         script.text = JSON.stringify(schema);
         document.head.appendChild(script);
         
-        // Actualizamos el título de la pestaña dinámicamente
+        // 2. Título de la pestaña
         document.title = `${modelName} | NOGLE Premium`;
+
+        // 3. Etiqueta Canonical Dinámica
+        const canonicalUrl = `https://nogle.vercel.app/visor?m=${this.currentModel}`;
+        const canonicalTag = document.createElement('link');
+        canonicalTag.rel = 'canonical';
+        canonicalTag.href = canonicalUrl;
+        document.head.appendChild(canonicalTag);
+
+        // 4. Inyección de Open Graph y Twitter Cards Dinámicos
+        const metaTags = [
+            { property: 'og:title', content: `${modelName} | NOGLE Premium` },
+            { property: 'og:description', content: `Contenido multimedia exclusivo de ${modelName}. Acceso premium.` },
+            { property: 'og:type', content: 'website' },
+            { property: 'og:url', content: canonicalUrl },
+            { property: 'og:image', content: firstImageSrc },
+            { name: 'twitter:card', content: 'summary_large_image' },
+            { name: 'twitter:title', content: `${modelName} | NOGLE Premium` },
+            { name: 'twitter:description', content: `Contenido multimedia exclusivo de ${modelName}.` },
+            { name: 'twitter:image', content: firstImageSrc }
+        ];
+
+        metaTags.forEach(tagData => {
+            const meta = document.createElement('meta');
+            if (tagData.property) meta.setAttribute('property', tagData.property);
+            if (tagData.name) meta.setAttribute('name', tagData.name);
+            meta.setAttribute('content', tagData.content);
+            document.head.appendChild(meta);
+        });
     },
 
     initObserver() {
         this.observer = new IntersectionObserver((entries) => {
-            // Lógica de RAM intacta para el futuro cuando metas videos
             entries.forEach(entry => {
                 if(entry.isIntersecting) {
-                    // Manejo de carga de video/autoplay diferido
+                    // Manejo futuro de carga de video/autoplay diferido
                 }
             });
         }, { threshold: 0.5 });
