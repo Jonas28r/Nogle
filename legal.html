@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Legal y Privacidad | NOGLE</title>
+    
+    <meta name="robots" content="noindex, follow"> <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:italic&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --dark: #0a0a0a;
+            --nogle-pink-hot: #ff1493;
+            --nogle-purple-rich: #9400d3;
+            --text-muted: #a0a0a0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--dark);
+            color: #f5f5f5;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .nav-header {
+            position: sticky; top: 0; width: 100%; height: 75px; z-index: 1000;
+            background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; align-items: center; padding: 0 20px; justify-content: center;
+        }
+
+        .logo-nogle {
+            font-family: 'Instrument Serif', serif;
+            font-size: 2.2rem;
+            text-decoration: none;
+            background: linear-gradient(90deg, var(--nogle-pink-hot) 0%, var(--nogle-purple-rich) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text; color: transparent;
+            text-shadow: 0 0 15px rgba(148, 0, 211, 0.4);
+        }
+
+        .legal-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            flex-grow: 1;
+        }
+
+        .legal-nav {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .legal-nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .legal-nav a:hover {
+            color: white;
+            border-color: var(--nogle-pink-hot);
+            background: rgba(255, 20, 147, 0.1);
+        }
+
+        .legal-section {
+            margin-bottom: 60px;
+            scroll-margin-top: 100px; /* Para que al hacer ancla no quede tapado por el header */
+        }
+
+        .legal-section h2 {
+            font-family: 'Instrument Serif', serif;
+            font-style: italic;
+            font-size: 2.2rem;
+            color: white;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        .legal-section h3 {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin: 25px 0 10px;
+            font-weight: 600;
+        }
+
+        .legal-section p, .legal-section ul {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 300;
+            margin-bottom: 15px;
+        }
+
+        .legal-section ul {
+            padding-left: 20px;
+        }
+
+        .legal-section li {
+            margin-bottom: 8px;
+        }
+
+        /* Footer Knon */
+        .nogle-footer {
+            padding: 40px 20px 20px;
+            background-color: #070707;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+        .footer-signature {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: #bbaea0; 
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="nav-header">
+        <a href="index.html" class="logo-nogle">NOGLE</a>
+    </header>
+
+    <main class="legal-container">
+        
+        <nav class="legal-nav">
+            <a href="#privacy">Privacidad</a>
+            <a href="#terms">Términos de Uso</a>
+            <a href="#dmca">Política DMCA</a>
+        </nav>
+
+        <section id="privacy" class="legal-section">
+            <h2>Política de Privacidad</h2>
+            <p>Última actualización: Abril 2026</p>
+            <p>En NOGLE (operado bajo Knon Ecosystem), priorizamos la privacidad absoluta y el anonimato de nuestros usuarios. Esta política explica nuestro enfoque minimalista respecto a la recopilación de datos.</p>
+            
+            <h3>1. Información que recopilamos</h3>
+            <p>No recopilamos datos personales identificables a menos que usted los proporcione voluntariamente (por ejemplo, al suscribirse a un boletín o contactar con soporte). Recopilamos información técnica no identificable, como direcciones IP anonimizadas y tipos de navegador, exclusivamente para garantizar el rendimiento de nuestra infraestructura y prevenir el fraude.</p>
+
+            <h3>2. Uso de la información</h3>
+            <p>La información técnica se utiliza para: mantener la seguridad de los servidores, gestionar el tráfico multimedia de forma eficiente y aplicar medidas contra la piratería o el acceso no autorizado a nuestro contenido exclusivo.</p>
+
+            <h3>3. Protección de la identidad</h3>
+            <p>NOGLE no vende, alquila ni comparte su historial de navegación o preferencias de contenido con terceros. Operamos bajo estrictos protocolos de confidencialidad y bases de datos descentralizadas.</p>
+        </section>
+
+        <section id="terms" class="legal-section">
+            <h2>Términos de Uso</h2>
+            
+            <h3>1. Restricción de Edad</h3>
+            <p>El acceso a NOGLE está estrictamente restringido a personas mayores de 18 años, o la mayoría de edad legal en su jurisdicción de residencia. Al ingresar a este sitio, usted certifica legalmente que cumple con este requisito.</p>
+
+            <h3>2. Propiedad Intelectual y Anti-Piratería</h3>
+            <p>Todo el contenido multimedia (fotografías, vídeos, textos y código fuente) es propiedad exclusiva de NOGLE y sus modelos asociados. Está terminantemente prohibido:</p>
+            <ul>
+                <li>Descargar, grabar la pantalla o capturar el contenido. (Nuestras medidas de ofuscación técnica están activas para prevenir esto).</li>
+                <li>Redistribuir o comercializar cualquier material alojado en nuestros servidores.</li>
+                <li>Utilizar herramientas de extracción automática (scraping) en nuestra plataforma.</li>
+            </ul>
+            <p>Cualquier violación resultará en el bloqueo permanente de la IP y posibles acciones legales.</p>
+
+            <h3>3. Renuncia de Responsabilidad</h3>
+            <p>El servicio se proporciona "tal cual". No garantizamos que el sitio esté ininterrumpido o libre de errores, aunque nuestra arquitectura garantiza altos niveles de disponibilidad.</p>
+        </section>
+
+        <section id="dmca" class="legal-section">
+            <h2>Política DMCA (Derechos de Autor)</h2>
+            <p>NOGLE respeta los derechos de propiedad intelectual de terceros. Si usted es propietario de derechos de autor y cree que su contenido ha sido subido a nuestra plataforma sin autorización, debe enviar una notificación oficial de acuerdo con la Digital Millennium Copyright Act (DMCA).</p>
+            
+            <h3>Proceso de Reclamación</h3>
+            <p>Envíe un correo electrónico a <strong>legal@knon.ecosystem</strong> (o su correo de contacto legal) incluyendo la siguiente información:</p>
+            <ul>
+                <li>Firma física o electrónica de la persona autorizada para actuar en nombre del propietario del derecho exclusivo presuntamente infringido.</li>
+                <li>Identificación de la obra protegida por derechos de autor que se alega ha sido infringida (URL exacta del contenido en NOGLE).</li>
+                <li>Información de contacto suficiente (correo electrónico y número de teléfono).</li>
+                <li>Una declaración de buena fe de que el uso del material no está autorizado por el propietario de los derechos de autor.</li>
+            </ul>
+            <p>Nos reservamos el derecho de eliminar contenido preventivamente tras recibir una notificación válida.</p>
+        </section>
+
+    </main>
+
+    <footer class="nogle-footer">
+        <div style="color: #444; font-size: 11px;">&copy; 2026 NOGLE. Todos los derechos reservados.</div>
+        <div class="footer-signature">By Knon</div>
+    </footer>
+
+</body>
+</html>
