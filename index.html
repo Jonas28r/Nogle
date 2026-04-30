@@ -7,6 +7,20 @@
     <title>NOGLE | Premium Exclusive</title>
     <meta name="description" content="Catálogo exclusivo de contenido multimedia premium.">
     
+    <link rel="canonical" href="https://nogle.vercel.app/" />
+
+    <meta property="og:title" content="NOGLE | Premium Exclusive">
+    <meta property="og:description" content="Catálogo exclusivo de contenido multimedia premium.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://nogle.vercel.app/">
+    
+    <meta property="og:image" content="https://nogle.vercel.app/logo-nogle.png">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="NOGLE | Premium Exclusive">
+    <meta name="twitter:description" content="Catálogo exclusivo de contenido multimedia premium.">
+    <meta name="twitter:image" content="https://nogle.vercel.app/logo-nogle.png">
+
     <meta name="rating" content="adult">
     <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
     
@@ -17,6 +31,7 @@
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "NOGLE",
+      "url": "https://nogle.vercel.app/",
       "description": "Plataforma premium exclusiva",
       "isFamilyFriendly": "False"
     }
@@ -30,8 +45,8 @@
             --accent: #ff3366;
             
             /* Paleta de Degradado Premium de la Imagen */
-            --nogle-pink-hot: #ff1493;   /* Rosa intenso de la imagen */
-            --nogle-purple-rich: #9400d3; /* Morado vibrante de la imagen */
+            --nogle-pink-hot: #ff1493;   
+            --nogle-purple-rich: #9400d3; 
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -63,7 +78,6 @@
             text-shadow: 0 0 15px rgba(148, 0, 211, 0.4);
         }
 
-        /* La Cuadrícula Mágica */
         .knon-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -71,7 +85,7 @@
             padding: 15px;
             max-width: 800px;
             margin: 0 auto;
-            flex-grow: 1; /* Permite que el contenido empuje el footer hacia abajo */
+            flex-grow: 1; 
         }
 
         .knon-card {
@@ -122,8 +136,6 @@
         }
 
         .info { padding: 12px; }
-        
-        /* H2 en lugar de H3 para mejor semántica SEO en el listado */
         .info h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: normal; }
         .info p { font-size: 11px; color: #777; }
 
@@ -136,9 +148,6 @@
             letter-spacing: 2px;
         }
 
-        /* ========================================== */
-        /* ESTILOS DEL FOOTER PROFESIONAL */
-        /* ========================================== */
         .nogle-footer {
             margin-top: 50px;
             padding: 40px 20px 20px;
@@ -179,7 +188,6 @@
             font-family: 'Instrument Serif', serif;
             font-size: 1.2rem;
             font-style: italic;
-            /* Color natural y relajado (Piedra/Arena Suave) */
             color: #bbaea0; 
             letter-spacing: 1px;
             opacity: 0.8;
@@ -223,8 +231,6 @@
                 container.innerHTML = ''; 
 
                 modelos.forEach(m => {
-                    // Semántica SEO: Cambiado el <h3> de la tarjeta a <h2>. 
-                    // El atributo alt se nutre de la API dinámicamente.
                     const card = `
                         <a href="visor?m=${m.id}" class="knon-card">
                             <div class="img-container">
