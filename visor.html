@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NOGLE | Visor Exclusivo</title>
     
+    <title>NOGLE | Visor Premium</title>
     <meta name="description" content="Visor multimedia exclusivo. Contenido premium de alta calidad.">
+    <meta name="robots" content="index, follow">
     
     <meta name="rating" content="adult">
     <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
     
-    <meta http-equiv="Cache-Control" content="no-store">
     <link rel="stylesheet" href="css/knon-theme.css">
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:italic&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:italic&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     
     <style>
         /* Estilos específicos del Visor de Lujo */
@@ -78,52 +78,27 @@
             background: transparent; text-transform: uppercase; letter-spacing: 2px;
         }
 
+        /* Footer Profesional */
+        .nogle-footer { padding: 40px 20px 20px; background-color: #070707; border-top: 1px solid rgba(255, 255, 255, 0.05); text-align: center; }
+        .footer-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 25px; }
+        .footer-links a { color: #666; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; transition: color 0.3s ease; }
+        .footer-links a:hover { color: #ff1493; }
+        .footer-copyright { color: #444; font-size: 11px; margin-bottom: 15px; letter-spacing: 0.5px; }
+        .footer-signature { font-family: 'Instrument Serif', serif; font-size: 1.2rem; font-style: italic; color: #bbaea0; letter-spacing: 1px; opacity: 0.8; }
+
         /* ========================================== */
-        /* ESTILOS DEL FOOTER PROFESIONAL */
+        /* CLASE MAESTRA SEO (Invisible al usuario, visible al Bot) */
         /* ========================================== */
-        .nogle-footer {
-            padding: 40px 20px 20px;
-            background-color: #070707;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            text-align: center;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
-        }
-
-        .footer-links a {
-            color: #666;
-            text-decoration: none;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            transition: color 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            color: #ff1493;
-        }
-
-        .footer-copyright {
-            color: #444;
-            font-size: 11px;
-            margin-bottom: 15px;
-            letter-spacing: 0.5px;
-        }
-
-        .footer-signature {
-            font-family: 'Instrument Serif', serif;
-            font-size: 1.2rem;
-            font-style: italic;
-            /* Color natural y relajado (Piedra/Arena Suave) */
-            color: #bbaea0; 
-            letter-spacing: 1px;
-            opacity: 0.8;
+        .seo-reader-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
     </style>
 </head>
@@ -131,9 +106,10 @@
 
     <header class="nav-header">
         <a href="index.html" class="btn-back">✕</a>
-        <h1 class="logo-nogle">NOGLE</h1>
-        <div style="width: 30px;"></div> 
+        <h1 class="logo-nogle" style="font-size: 2.5rem;">NOGLE</h1> <div style="width: 30px;"></div> 
     </header>
+
+    <div id="seo-injection-container" class="seo-reader-only"></div>
 
     <main id="gallery-container">
         </main>
@@ -163,6 +139,62 @@
             By Knon
         </div>
     </footer>
+
+    <script>
+        (function injectDynamicSEO() {
+            const params = new URLSearchParams(window.location.search);
+            const slug = params.get('m');
+
+            if (slug) {
+                // Limpiar el slug (ej. "la-vivi-manaba" -> "LA VIVI MANABA")
+                const cleanName = slug.replace(/-/g, ' ').toUpperCase();
+                const titleCaseName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                
+                const currentUrl = `https://nogle.vercel.app/visor?m=${slug}`;
+
+                // 1. Sobrescribir Head Meta Tags
+                document.title = `Contenido Exclusivo de ${titleCaseName} | NOGLE`;
+                
+                let metaDesc = document.querySelector('meta[name="description"]');
+                if (metaDesc) metaDesc.content = `Disfruta de la galería premium de ${titleCaseName}. Fotos y videos exclusivos de alta calidad solo en NOGLE.`;
+
+                // 2. Canonical Tag
+                let canonicalTag = document.querySelector('link[rel="canonical"]');
+                if (!canonicalTag) {
+                    canonicalTag = document.createElement('link');
+                    canonicalTag.rel = 'canonical';
+                    document.head.appendChild(canonicalTag);
+                }
+                canonicalTag.href = currentUrl;
+
+                // 3. Crear Estructura Semántica para el Bot (El texto que Google "leerá")
+                const seoContainer = document.getElementById('seo-injection-container');
+                seoContainer.innerHTML = `
+                    <h1>Galería y Contenido Premium de ${titleCaseName}</h1>
+                    <h2>Fotos y videos exclusivos de OnlyFans creadores</h2>
+                    <p>Bienvenido a la galería oficial de <strong>${titleCaseName}</strong> en NOGLE. Aquí encontrarás el mejor catálogo de contenido multimedia, fotos en alta resolución y videos premium. Nuestro ecosistema exclusivo te garantiza acceso directo al material más reciente de creadoras de contenido. Explora la colección completa de ${cleanName} de forma segura y rápida.</p>
+                `;
+
+                // 4. Inyección JSON-LD (Schema.org)
+                const schema = {
+                    "@context": "https://schema.org",
+                    "@type": "ImageGallery",
+                    "name": `Galería Premium de ${titleCaseName}`,
+                    "description": `Catálogo exclusivo de fotos y videos de ${titleCaseName}.`,
+                    "url": currentUrl,
+                    "publisher": {
+                        "@type": "Organization",
+                        "name": "NOGLE by Knon"
+                    }
+                };
+                
+                const scriptLd = document.createElement('script');
+                scriptLd.type = "application/ld+json";
+                scriptLd.text = JSON.stringify(schema);
+                document.head.appendChild(scriptLd);
+            }
+        })();
+    </script>
 
     <script src="js/KnonPlayer.js"></script>
     
