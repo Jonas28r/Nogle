@@ -5,17 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <title>NOGLE | Premium Exclusive</title>
-    <meta name="description" content="Catálogo exclusivo de contenido multimedia premium y actualizaciones diarias.">
-    
+    <meta name="description" content="Catálogo exclusivo de contenido multimedia premium. Actualizaciones diarias de las mejores creadoras en el ecosistema Knon.">
+    <meta name="keywords" content="premium, exclusivo, contenido, nogles, knon, multimedia">
     <link rel="canonical" href="https://nogle.vercel.app/" />
+    <meta name="robots" content="index, follow">
 
     <meta property="og:title" content="NOGLE | Premium Exclusive">
-    <meta property="og:description" content="Acceso al ecosistema multimedia más exclusivo.">
+    <meta property="og:description" content="Acceso al ecosistema multimedia más exclusivo. Contenido verificado y actualizado.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://nogle.vercel.app/">
     <meta property="og:image" content="https://nogle.vercel.app/logo-nogle.png">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="NOGLE | Premium Exclusive">
+    <meta name="twitter:description" content="Explora el catálogo premium de Nogle.">
+    <meta name="twitter:image" content="https://nogle.vercel.app/logo-nogle.png">
+
     <meta name="rating" content="adult">
     <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "NOGLE",
+      "url": "https://nogle.vercel.app/",
+      "description": "Plataforma premium exclusiva del ecosistema Knon",
+      "isFamilyFriendly": "False",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://nogle.vercel.app/?s={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:italic&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     
@@ -25,7 +48,7 @@
             --accent: #ff3366;
             --nogle-pink-hot: #ff1493;   
             --nogle-purple-rich: #9400d3; 
-            --new-tag: #00f2ff; /* Cian eléctrico para novedades */
+            --new-tag: #00f2ff; /* Cian para novedades */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -73,8 +96,10 @@
             overflow: hidden;
             text-decoration: none;
             color: white;
-            transition: transform 0.3s;
+            transition: transform 0.3s ease;
         }
+
+        .knon-card:active { transform: scale(0.98); }
 
         .img-container {
             position: relative;
@@ -85,7 +110,6 @@
 
         .img-container img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Marca de agua sutil */
         .watermark-center {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-30deg);
@@ -94,7 +118,6 @@
             pointer-events: none; letter-spacing: 5px;
         }
 
-        /* Badges Dinámicos */
         .badge {
             position: absolute; top: 10px; right: 10px;
             font-size: 9px; font-weight: 900;
@@ -115,7 +138,7 @@
 
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.05); opacity: 0.9; }
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
 
@@ -128,12 +151,13 @@
         .nogle-footer { margin-top: 50px; padding: 40px 20px 20px; background-color: #070707; border-top: 1px solid rgba(255, 255, 255, 0.05); text-align: center; }
         .footer-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 25px; }
         .footer-links a { color: #555; text-decoration: none; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; }
+        .footer-copyright { color: #333; font-size: 10px; margin-top: 20px; }
         .footer-signature { font-family: 'Instrument Serif', serif; font-size: 1.2rem; font-style: italic; color: #bbaea0; opacity: 0.6; margin-top: 15px; }
 
-        /* Modal +18 */
+        /* MODAL +18 PREMIUM */
         .age-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 3, 3, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; transition: opacity 0.6s ease; }
         .age-overlay.hidden { opacity: 0; pointer-events: none; }
-        .age-box { background: #0c0c0c; border: 1px solid rgba(255, 20, 147, 0.15); border-radius: 20px; padding: 45px 30px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .age-box { background: #0c0c0c; border: 1px solid rgba(255, 20, 147, 0.15); border-radius: 20px; padding: 45px 30px; text-align: center; max-width: 400px; width: 100%; }
         .age-text { font-size: 0.85rem; color: #888; line-height: 1.6; margin-bottom: 35px; }
         .btn-yes { background: linear-gradient(90deg, var(--nogle-pink-hot), var(--nogle-purple-rich)); color: white; border: none; padding: 18px; border-radius: 12px; font-weight: 900; width: 100%; cursor: pointer; letter-spacing: 1px; margin-bottom: 15px; }
         .btn-no { background: transparent; color: #444; border: 1px solid #222; padding: 14px; border-radius: 12px; width: 100%; cursor: pointer; font-size: 0.8rem; }
@@ -165,7 +189,7 @@
             <a href="legal.html#terms">Términos</a>
             <a href="legal.html#dmca">DMCA</a>
         </div>
-        <div class="footer-copyright" style="color: #333; font-size: 10px; margin-top: 20px;">&copy; 2026 NOGLE. ALL RIGHTS RESERVED.</div>
+        <div class="footer-copyright">&copy; 2026 NOGLE. ALL RIGHTS RESERVED.</div>
         <div class="footer-signature">By Knon</div>
     </footer>
 
@@ -181,7 +205,7 @@
             document.body.classList.remove('modal-open');
         }
 
-        // 2. Carga Dinámica con Detección de Novedades
+        // 2. Carga Dinámica
         const WORKER_URL = 'https://nogle-knon.villajonas09.workers.dev/';
 
         function isRecent(dateString) {
@@ -189,22 +213,18 @@
             const uploadDate = new Date(dateString);
             const now = new Date();
             const diffInHours = (now - uploadDate) / (1000 * 60 * 60);
-            return diffInHours < 72; // Marca como nuevo por 3 días
+            return diffInHours < 72; 
         }
 
         async function initCatalog() {
             const container = document.getElementById('main-catalog');
-            
             try {
-                // El worker ahora nos envía la fecha de la última actualización real
                 const response = await fetch(WORKER_URL + 'catalogo.json');
                 const modelos = await response.json();
-                
                 container.innerHTML = ''; 
 
                 modelos.forEach(m => {
                     const fresh = isRecent(m.date);
-                    
                     const card = `
                         <a href="visor?m=${m.id}" class="knon-card" title="Explorar contenido de ${m.name}">
                             <div class="img-container">
@@ -220,12 +240,10 @@
                     `;
                     container.insertAdjacentHTML('beforeend', card);
                 });
-
             } catch (error) {
                 container.innerHTML = `<div id="loader" style="color:red;">FALLO EN LA CONEXIÓN</div>`;
             }
         }
-
         initCatalog();
     </script>
 </body>
