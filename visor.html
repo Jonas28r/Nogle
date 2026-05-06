@@ -204,7 +204,8 @@
             stars.forEach((s, index) => {
                 if(index < n) s.classList.add('active'); else s.classList.remove('active');
             });
-            document.getElementById('btn-subscribe').style.display = 'block';
+            // La siguiente línea ha sido comentada para mantener la plataforma 100% gratuita temporalmente
+            // document.getElementById('btn-subscribe').style.display = 'block';
             if(window.navigator.vibrate) window.navigator.vibrate(50);
         }
         
@@ -220,3 +221,4 @@
     </script>
 </body>
 </html>
+
