@@ -1,5 +1,5 @@
 /* =========================================
-   KNON PLAYER V1.1 - R2 CONNECTED (SEO OPTIMIZED)
+   KNON PLAYER V1.2 - R2 CONNECTED (SEO ADVANCED)
    ========================================= */
 
 const KnonPlayer = {
@@ -18,9 +18,10 @@ const KnonPlayer = {
         }
     },
 
-    // Función auxiliar para capitalizar nombres en el SEO
-    formatName(name) {
-        return name ? name.charAt(0).toUpperCase() + name.slice(1) : 'Modelo';
+    // ACTUALIZACIÓN: Formateo perfecto para eliminar guiones y poner mayúsculas iniciales
+    formatName(slug) {
+        if (!slug) return 'Modelo';
+        return slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     },
 
     async loadContent() {
@@ -41,20 +42,21 @@ const KnonPlayer = {
             // Extraer la primera imagen para usarla como portada dinámica al compartir el link
             const firstImageSrc = data.items.find(i => i.type === 'image')?.src || 'https://nogle.vercel.app/logo-nogle.png';
 
-            data.items.forEach(item => {
+            // ACTUALIZACIÓN: Uso del index para crear texto único por cada imagen/video
+            data.items.forEach((item, index) => {
                 const div = document.createElement('div');
                 div.className = 'media-item';
 
                 if (item.type === 'image') {
                     div.innerHTML = `
-                        <img src="${item.src}" loading="lazy" crossorigin="anonymous" alt="${modelName} - Contenido exclusivo Nogle">
+                        <img src="${item.src}" loading="lazy" crossorigin="anonymous" alt="Foto ${index + 1} de ${modelName} - Contenido exclusivo premium">
                         <div class="watermark">NOGLE</div>
                     `;
                     
                     schemaItems.push({
                         "@type": "ImageObject",
                         "contentUrl": item.src,
-                        "name": `Fotografía exclusiva de ${modelName}`,
+                        "name": `Fotografía premium ${index + 1} de ${modelName}`,
                         "creator": {
                             "@type": "Person",
                             "name": modelName
@@ -71,8 +73,8 @@ const KnonPlayer = {
 
                     schemaItems.push({
                         "@type": "VideoObject",
-                        "name": `Vídeo exclusivo de ${modelName}`,
-                        "description": item.description || `Escena multimedia premium de ${modelName}.`,
+                        "name": `Vídeo exclusivo ${index + 1} de ${modelName}`,
+                        "description": item.description || `Escena multimedia premium número ${index + 1} de ${modelName} en alta definición.`,
                         "thumbnailUrl": [posterUrl],
                         "uploadDate": item.date || new Date().toISOString(),
                         "contentUrl": item.src,
@@ -83,7 +85,7 @@ const KnonPlayer = {
                 container.appendChild(div);
             });
 
-            // Inyectamos todo el SEO dinámico (Schema, Canonical y Open Graph)
+            // Inyectamos todo el SEO dinámico (Schema, y actualización de Open Graph)
             this.injectSEO(schemaItems, modelName, firstImageSrc);
 
             this.initObserver();
@@ -95,7 +97,7 @@ const KnonPlayer = {
     },
 
     injectSEO(schemaItems, modelName, firstImageSrc) {
-        // 1. Inyección de JSON-LD (Schema.org)
+        // 1. Inyección de JSON-LD (Schema.org) para los items individuales
         const schema = {
             "@context": "https://schema.org",
             "@type": "CollectionPage",
@@ -109,36 +111,25 @@ const KnonPlayer = {
         script.text = JSON.stringify(schema);
         document.head.appendChild(script);
         
-        // 2. Título de la pestaña
-        document.title = `${modelName} | NOGLE Premium`;
+        // 2. ACTUALIZACIÓN: Función auxiliar inteligente para actualizar etiquetas sin duplicarlas
+        const updateMeta = (attributeName, attributeValue, contentValue) => {
+            let meta = document.querySelector(`meta[${attributeName}="${attributeValue}"]`);
+            if (!meta) {
+                meta = document.createElement('meta');
+                meta.setAttribute(attributeName, attributeValue);
+                document.head.appendChild(meta);
+            }
+            meta.setAttribute('content', contentValue);
+        };
 
-        // 3. Etiqueta Canonical Dinámica
-        const canonicalUrl = `https://nogle.vercel.app/visor?m=${this.currentModel}`;
-        const canonicalTag = document.createElement('link');
-        canonicalTag.rel = 'canonical';
-        canonicalTag.href = canonicalUrl;
-        document.head.appendChild(canonicalTag);
-
-        // 4. Inyección de Open Graph y Twitter Cards Dinámicos
-        const metaTags = [
-            { property: 'og:title', content: `${modelName} | NOGLE Premium` },
-            { property: 'og:description', content: `Contenido multimedia exclusivo de ${modelName}. Acceso premium.` },
-            { property: 'og:type', content: 'website' },
-            { property: 'og:url', content: canonicalUrl },
-            { property: 'og:image', content: firstImageSrc },
-            { name: 'twitter:card', content: 'summary_large_image' },
-            { name: 'twitter:title', content: `${modelName} | NOGLE Premium` },
-            { name: 'twitter:description', content: `Contenido multimedia exclusivo de ${modelName}.` },
-            { name: 'twitter:image', content: firstImageSrc }
-        ];
-
-        metaTags.forEach(tagData => {
-            const meta = document.createElement('meta');
-            if (tagData.property) meta.setAttribute('property', tagData.property);
-            if (tagData.name) meta.setAttribute('name', tagData.name);
-            meta.setAttribute('content', tagData.content);
-            document.head.appendChild(meta);
-        });
+        // 3. Actualización de Open Graph y Twitter Cards Dinámicos con la imagen real de la base de datos
+        updateMeta('property', 'og:title', `${modelName} | NOGLE Premium`);
+        updateMeta('property', 'og:description', `Contenido multimedia exclusivo de ${modelName}. Acceso premium.`);
+        updateMeta('property', 'og:image', firstImageSrc);
+        
+        updateMeta('name', 'twitter:title', `${modelName} | NOGLE Premium`);
+        updateMeta('name', 'twitter:description', `Galería premium de fotos y videos exclusivos de ${modelName}.`);
+        updateMeta('name', 'twitter:image', firstImageSrc);
     },
 
     initObserver() {
