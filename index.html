@@ -13,17 +13,15 @@
     <meta property="og:description" content="Catálogo exclusivo de contenido multimedia premium.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://nogle.vercel.app/">
-    
     <meta property="og:image" content="https://nogle.vercel.app/logo-nogle.png">
     
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="NOGLE | Premium Exclusive">
     <meta name="twitter:description" content="Catálogo exclusivo de contenido multimedia premium.">
-    <meta name="twitter:image" content="https://nogle.vercel.app/logo-nogle.png">
 
     <meta name="rating" content="adult">
     <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
-    
+
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -41,10 +39,9 @@
             --gold: #d4af37;
             --dark: #0a0a0a;
             --accent: #ff3366;
-            
-            /* Paleta de Degradado Premium de la Imagen */
             --nogle-pink-hot: #ff1493;   
             --nogle-purple-rich: #9400d3; 
+            --new-tag: #00f2ff; /* Color cian para lo nuevo */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -59,15 +56,9 @@
             min-height: 100vh;
         }
 
-        /* Bloquear scroll cuando el modal está activo */
-        body.modal-open {
-            overflow: hidden;
-        }
+        body.modal-open { overflow: hidden; }
 
-        header {
-            padding: 40px 20px;
-            text-align: center;
-        }
+        header { padding: 40px 20px; text-align: center; }
 
         header h1, .logo-nogle {
             font-family: 'Instrument Serif', serif;
@@ -108,191 +99,54 @@
             background: #1a1a1a;
         }
 
-        .img-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; }
 
         .watermark-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 2.5rem;
-            font-weight: 900;
+            font-size: 2.5rem; font-weight: 900;
             color: rgba(255,255,255,0.1);
-            pointer-events: none;
-            letter-spacing: 5px;
-            white-space: nowrap;
+            pointer-events: none; letter-spacing: 5px;
         }
 
+        /* Badge base */
         .badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--accent);
-            font-size: 10px;
-            font-weight: bold;
-            padding: 4px 8px;
-            border-radius: 2px;
+            position: absolute; top: 10px; right: 10px;
+            font-size: 9px; font-weight: bold;
+            padding: 4px 8px; border-radius: 2px;
+            text-transform: uppercase;
+        }
+
+        .badge-free { background: var(--accent); }
+        
+        /* Estilo para el Badge de NUEVO */
+        .badge-new { 
+            background: var(--new-tag); 
+            color: black;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
         }
 
         .info { padding: 12px; }
         .info h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: normal; }
         .info p { font-size: 11px; color: #777; }
 
-        #loader {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 50px;
-            font-size: 12px;
-            color: var(--gold);
-            letter-spacing: 2px;
-        }
+        #loader { grid-column: 1 / -1; text-align: center; padding: 50px; font-size: 12px; color: var(--gold); letter-spacing: 2px; }
 
-        .nogle-footer {
-            margin-top: 50px;
-            padding: 40px 20px 20px;
-            background-color: #070707;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            text-align: center;
-        }
+        .nogle-footer { margin-top: 50px; padding: 40px 20px 20px; background-color: #070707; border-top: 1px solid rgba(255, 255, 255, 0.05); text-align: center; }
+        .footer-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 25px; }
+        .footer-links a { color: #666; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; }
+        .footer-copyright { color: #444; font-size: 11px; margin-bottom: 15px; }
+        .footer-signature { font-family: 'Instrument Serif', serif; font-size: 1.2rem; font-style: italic; color: #bbaea0; opacity: 0.8; }
 
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
-        }
-
-        .footer-links a {
-            color: #666;
-            text-decoration: none;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            transition: color 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            color: var(--nogle-pink-hot);
-        }
-
-        .footer-copyright {
-            color: #444;
-            font-size: 11px;
-            margin-bottom: 15px;
-            letter-spacing: 0.5px;
-        }
-
-        .footer-signature {
-            font-family: 'Instrument Serif', serif;
-            font-size: 1.2rem;
-            font-style: italic;
-            color: #bbaea0; 
-            letter-spacing: 1px;
-            opacity: 0.8;
-        }
-
-        /* ========================================== */
-        /* MODAL DE VERIFICACIÓN DE EDAD ESTILO PREMIUM */
-        /* ========================================== */
-        .age-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 5, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            opacity: 1;
-            transition: opacity 0.5s ease;
-        }
-
-        .age-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .age-box {
-            background: #111;
-            border: 1px solid rgba(255, 20, 147, 0.2);
-            border-radius: 16px;
-            padding: 40px 25px;
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-            transform: translateY(0);
-            transition: transform 0.5s ease;
-        }
-
-        .age-overlay.hidden .age-box {
-            transform: translateY(20px);
-        }
-
-        .age-box h2 {
-            font-size: 2.8rem;
-            margin-bottom: 5px;
-        }
-
-        .age-subtitle {
-            font-family: 'Instrument Serif', serif;
-            font-size: 1.6rem;
-            font-style: italic;
-            color: #f5f5f5;
-            margin-bottom: 15px;
-        }
-
-        .age-text {
-            font-size: 0.85rem;
-            color: #aaa;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-
-        .age-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .btn-yes {
-            background: linear-gradient(90deg, var(--nogle-pink-hot), var(--nogle-purple-rich));
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        .btn-no {
-            background: transparent;
-            color: #666;
-            border: 1px solid #333;
-            padding: 14px;
-            border-radius: 8px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-        }
-
-        .btn-no:hover {
-            color: white;
-            border-color: #666;
-        }
+        /* Modal +18 */
+        .age-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; transition: opacity 0.5s; }
+        .age-overlay.hidden { opacity: 0; pointer-events: none; }
+        .age-box { background: #111; border: 1px solid rgba(255, 20, 147, 0.2); border-radius: 16px; padding: 40px 25px; text-align: center; max-width: 400px; width: 100%; }
+        .age-box h2 { font-size: 2.8rem; margin-bottom: 5px; }
+        .age-text { font-size: 0.85rem; color: #aaa; margin-bottom: 30px; }
+        .age-buttons { display: flex; flex-direction: column; gap: 12px; }
+        .btn-yes { background: linear-gradient(90deg, var(--nogle-pink-hot), var(--nogle-purple-rich)); color: white; border: none; padding: 16px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn-no { background: transparent; color: #666; border: 1px solid #333; padding: 14px; border-radius: 8px; cursor: pointer; }
     </style>
 </head>
 <body class="modal-open">
@@ -300,11 +154,11 @@
     <div id="age-verification-modal" class="age-overlay">
         <div class="age-box">
             <h2 class="logo-nogle">NOGLE</h2>
-            <p class="age-subtitle">Acceso Exclusivo</p>
-            <p class="age-text">Este ecosistema contiene material premium para adultos. Al ingresar, confirmas que tienes 18 años o la mayoría de edad legal en tu jurisdicción.</p>
+            <p style="font-style: italic; margin-bottom: 15px;">Acceso Exclusivo</p>
+            <p class="age-text">Este ecosistema contiene material premium para adultos. Confirma que eres mayor de edad para ingresar.</p>
             <div class="age-buttons">
                 <button class="btn-yes" onclick="acceptAge()">SÍ, SOY MAYOR DE 18</button>
-                <button class="btn-no" onclick="rejectAge()">NO, SALIR</button>
+                <button class="btn-no" onclick="window.location.href='https://google.com'">SALIR</button>
             </div>
         </div>
     </div>
@@ -314,76 +168,67 @@
     </header>
 
     <main class="knon-grid" id="main-catalog">
-        <div id="loader">CONECTANDO CON EL ECOSISTEMA...</div>
+        <div id="loader">SINCRONIZANDO ECOSISTEMA...</div>
     </main>
 
     <footer class="nogle-footer">
         <div class="footer-links">
-            <a href="legal.html#privacy">Políticas de Privacidad</a>
-            <a href="legal.html#terms">Términos de Uso</a>
+            <a href="legal.html#privacy">Políticas</a>
+            <a href="legal.html#terms">Términos</a>
             <a href="legal.html#dmca">DMCA</a>
         </div>
-        <div class="footer-copyright">
-            &copy; 2026 NOGLE. Todos los derechos reservados.
-        </div>
-        <div class="footer-signature">
-            By Knon
-        </div>
+        <div class="footer-copyright">&copy; 2026 NOGLE. By Knon</div>
     </footer>
 
     <script>
-        // LÓGICA DE VERIFICACIÓN DE EDAD
-        function checkAgeVerification() {
-            const hasVerified = localStorage.getItem('nogle_age_verified');
-            if (hasVerified === 'true') {
-                // Si ya verificó antes, ocultamos el modal y permitimos scroll
-                document.getElementById('age-verification-modal').classList.add('hidden');
-                document.body.classList.remove('modal-open');
-            }
-        }
-
+        // 1. Verificación de Edad
         function acceptAge() {
-            // Guardamos la decisión en el teléfono
             localStorage.setItem('nogle_age_verified', 'true');
-            // Ocultamos con animación
             document.getElementById('age-verification-modal').classList.add('hidden');
-            // Desbloqueamos el scroll
+            document.body.classList.remove('modal-open');
+        }
+        if (localStorage.getItem('nogle_age_verified') === 'true') {
+            document.getElementById('age-verification-modal').classList.add('hidden');
             document.body.classList.remove('modal-open');
         }
 
-        function rejectAge() {
-            // Si rechaza, lo enviamos a una página segura
-            window.location.href = "https://www.google.com";
-        }
-
-        // Ejecutar revisión apenas carga el script
-        checkAgeVerification();
-
-
-        // LÓGICA DEL CATÁLOGO (ACTUALIZADA CON SEO)
+        // 2. Lógica de Catálogo Dinámico
         const WORKER_URL = 'https://nogle-knon.villajonas09.workers.dev/';
+
+        // Función para saber si algo es "NUEVO" (menos de 72 horas)
+        function isRecent(dateString) {
+            if (!dateString) return false;
+            const uploadDate = new Date(dateString);
+            const now = new Date();
+            const diffInHours = (now - uploadDate) / (1000 * 60 * 60);
+            return diffInHours < 72; // Umbral de 3 días
+        }
 
         async function initCatalog() {
             const container = document.getElementById('main-catalog');
             
             try {
-                const response = await fetch(WORKER_URL);
+                const response = await fetch(WORKER_URL + 'catalogo.json');
                 const modelos = await response.json();
                 
                 container.innerHTML = ''; 
 
                 modelos.forEach(m => {
-                    // Aquí se agregó el atributo 'title' para mejorar el SEO
+                    const fresh = isRecent(m.date);
+                    const badgeHTML = fresh 
+                        ? `<div class="badge badge-new">NUEVO</div>` 
+                        : `<div class="badge badge-free">GRATIS</div>`;
+
                     const card = `
-                        <a href="visor?m=${m.id}" class="knon-card" title="Ver galería exclusiva de ${m.name}">
+                        <a href="visor?m=${m.id}" class="knon-card" title="Ver galería de ${m.name}">
                             <div class="img-container">
-                                <img src="${m.cover}" alt="Contenido exclusivo de ${m.name}" loading="lazy" crossorigin="anonymous">
+                                <img src="${m.cover}" alt="Contenido de ${m.name}" loading="lazy" crossorigin="anonymous">
                                 <div class="watermark-center">NOGLE</div>
-                                <div class="badge">GRATIS</div>
+                                ${badgeHTML}
                             </div>
                             <div class="info">
                                 <h2>${m.name}</h2>
-                                <p>VER CONTENIDO</p>
+                                <p>${fresh ? 'ACTUALIZADO HACE POCO' : 'VER CONTENIDO'}</p>
                             </div>
                         </a>
                     `;
@@ -391,13 +236,7 @@
                 });
 
             } catch (error) {
-                container.innerHTML = `
-                    <div id="loader" style="color:#555;">
-                        SISTEMA EN MANTENIMIENTO<br>
-                        <small>Estamos preparando contenido nuevo</small>
-                    </div>
-                `;
-                console.error("Error al conectar con el ecosistema:", error);
+                container.innerHTML = `<div id="loader">ERROR DE CONEXIÓN</div>`;
             }
         }
 
@@ -405,3 +244,4 @@
     </script>
 </body>
 </html>
+
