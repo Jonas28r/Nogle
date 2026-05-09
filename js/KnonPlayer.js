@@ -9,6 +9,14 @@ const KnonPlayer = {
     directLinkFired: false, // Control para disparar el secuestro 1 sola vez por sesión
     
     init() {
+        // SOLUCIÓN ANTI-BLOQUEO: Fuerza al navegador a identificarse ante tu Worker
+        if (!document.querySelector('meta[name="referrer"]')) {
+            const metaRef = document.createElement('meta');
+            metaRef.name = "referrer";
+            metaRef.content = "strict-origin-when-cross-origin";
+            document.head.appendChild(metaRef);
+        }
+
         const params = new URLSearchParams(window.location.search);
         this.currentModel = params.get('m'); 
         
@@ -102,9 +110,9 @@ const KnonPlayer = {
                 div.className = 'media-item';
 
                 if (item.type === 'image') {
-                    // El onclick aquí actúa como trampa secundaria
+                    // El onclick aquí actúa como trampa secundaria. Se añadió referrerpolicy para doble seguridad.
                     div.innerHTML = `
-                        <img src="${item.src}" loading="lazy" crossorigin="anonymous" alt="Foto ${index + 1} de ${modelName}" onclick="KnonPlayer.triggerPremiumAction()">
+                        <img src="${item.src}" loading="lazy" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin" alt="Foto ${index + 1} de ${modelName}" onclick="KnonPlayer.triggerPremiumAction()">
                         <div class="watermark">NOGLE</div>
                     `;
                     
@@ -116,7 +124,7 @@ const KnonPlayer = {
 
                 } else if (item.type === 'video') {
                     div.innerHTML = `
-                        <video src="${item.src}" preload="none" poster="${item.poster || ''}" crossorigin="anonymous" controls playsinline onclick="KnonPlayer.triggerPremiumAction()"></video>
+                        <video src="${item.src}" preload="none" poster="${item.poster || ''}" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin" controls playsinline onclick="KnonPlayer.triggerPremiumAction()"></video>
                         <div class="watermark">NOGLE</div>
                     `;
                 }
@@ -176,3 +184,4 @@ const KnonPlayer = {
 };
 
 KnonPlayer.init();
+
