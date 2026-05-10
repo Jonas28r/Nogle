@@ -24,6 +24,101 @@
     <meta name="rating" content="adult">
     <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
 
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    let adblockDetectado = false;
+
+    // EL CASTIGO (Muro Visual de NOGLE)
+    function activarProtocoloDefensa() {
+        if (adblockDetectado) return; // Evita bloqueos múltiples
+        adblockDetectado = true;
+        
+        document.body.style.overflow = 'hidden'; // Congela el scroll
+        const gallery = document.getElementById('gallery-container');
+        if(gallery) gallery.style.display = 'none'; // Oculta las fotos para evitar robos
+
+        const overlay = document.createElement('div');
+        overlay.id = 'nogle-adblock-wall';
+        overlay.style = `
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 10, 0.98); z-index: 999999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 25px; box-sizing: border-box;
+            backdrop-filter: blur(10px);
+        `;
+        
+        overlay.innerHTML = `
+            <div style="max-width: 400px; width: 100%;">
+                <h2 style="color: #ff1493; margin-bottom: 15px; font-weight: 900; letter-spacing: 2px; font-family: 'Inter', sans-serif; font-size: 24px;">
+                    ⚠️ ACCESO RESTRINGIDO ⚠️
+                </h2>
+                <p style="color: #e0e0e0; margin-bottom: 25px; font-size: 15px; line-height: 1.6; font-family: 'Inter', sans-serif;">
+                    Hemos detectado un <b>Bloqueador de Anuncios</b> activo en tu dispositivo. 
+                    <br><br>
+                    Los servidores y el contenido exclusivo de <b>NOGLE</b> se mantienen 100% gracias a la publicidad. Para desbloquear la galería oculta, pausa tu AdBlocker y recarga la página.
+                </p>
+                <button onclick="location.reload()" style="
+                    background: linear-gradient(90deg, #ff1493, #9400d3);
+                    color: white; border: none; padding: 18px 25px; width: 100%;
+                    border-radius: 12px; font-weight: 900; letter-spacing: 1px;
+                    text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif;
+                    box-shadow: 0 4px 20px rgba(255, 20, 147, 0.4); font-size: 14px;
+                ">
+                    Ya lo desactivé, Entrar
+                </button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+    }
+
+    // ==========================================
+    // TRAMPA 1: NIVEL VISUAL (DOM Honeypot)
+    // Caza bloqueadores que ocultan elementos HTML inyectando CSS.
+    // ==========================================
+    const baitDiv = document.createElement('div');
+    baitDiv.innerHTML = '&nbsp;';
+    baitDiv.className = 'ads ad adsbox doubleclick ad-placement carbon-ads advert banner-ad';
+    baitDiv.style.position = 'absolute';
+    baitDiv.style.top = '-9999px';
+    baitDiv.style.height = '10px';
+    baitDiv.style.width = '10px';
+    document.body.appendChild(baitDiv);
+
+    setTimeout(function() {
+        const isBlockedDOM = baitDiv.offsetHeight === 0 || window.getComputedStyle(baitDiv).display === 'none';
+        if (isBlockedDOM) activarProtocoloDefensa();
+        baitDiv.remove(); // Limpiamos la evidencia
+    }, 300);
+
+    // ==========================================
+    // TRAMPA 2: NIVEL ETIQUETA (Script Honeypot)
+    // Caza bloqueadores que evitan la carga de etiquetas <script> externas.
+    // ==========================================
+    const baitNetwork = document.createElement('script');
+    baitNetwork.onerror = function() {
+        activarProtocoloDefensa();
+    };
+    baitNetwork.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
+    document.head.appendChild(baitNetwork);
+
+    // ==========================================
+    // TRAMPA 3: NIVEL PETICIÓN (Fetch/XHR Honeypot)
+    // Caza bloqueadores avanzados que interceptan llamadas a APIs o Pixeles.
+    // ==========================================
+    setTimeout(function() {
+        // Disparamos un ping a DoubleClick (La red más bloqueada del planeta).
+        // mode: 'no-cors' nos permite hacer la petición sin que el navegador nos bloquee por seguridad propia.
+        fetch("https://ad.doubleclick.net/favicon.ico", { mode: 'no-cors', cache: 'no-store' })
+            .catch(function() {
+                // Si la promesa hace "catch", significa que el bloqueador asesinó la petición.
+                activarProtocoloDefensa();
+            });
+    }, 100);
+
+});
+</script>
+
+    
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
