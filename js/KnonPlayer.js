@@ -32,20 +32,15 @@ const KnonPlayer = {
         return slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     },
 
-    // --- GATILLO DIRECT LINK (Acción Inmediata) ---
+    // --- ACCIÓN PREMIUM (Solo visual) ---
     triggerPremiumAction() {
         if (!this.directLinkFired) {
             this.directLinkFired = true; 
             
-            // Reemplaza esto con la URL HTTP/HTTPS real de tu Direct Link de OnclickA
-            const directLinkURL = "https://PEGA-AQUI-TU-URL-DIRECTA.com"; 
+            // Nota: El Popunder de OnclickA ya estará inyectado en el HTML global
+            // y se activará automáticamente con este clic.
+            // Aquí solo hacemos la animación visual para generar expectativa.
             
-            // Abre la publicidad instantáneamente (Trusted Event) para evitar bloqueos
-            if (directLinkURL && directLinkURL.startsWith('http')) {
-                window.open(directLinkURL, '_blank');
-            }
-            
-            // Animación del botón para generar expectativa
             const btn = document.getElementById('btn-premium-unlock');
             if(btn) {
                 btn.innerHTML = "CONECTANDO... ⏳";
