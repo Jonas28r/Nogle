@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <title>NOGLE | Visor Premium</title>
-    <meta name="description" content="Visor multimedia exclusivo. Contenido premium de alta calidad.">
     <meta name="robots" content="index, follow">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-    
     <meta name="rating" content="adult">
     <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
     
@@ -17,111 +14,68 @@
     
     <script>
     document.addEventListener("DOMContentLoaded", function() {
-        let adblockDetectado = false;
-        function activarProtocoloDefensa() {
-            if (adblockDetectado) return;
-            adblockDetectado = true;
-            document.body.style.overflow = 'hidden';
-            const gallery = document.getElementById('gallery-container');
-            if(gallery) gallery.style.display = 'none';
-            const overlay = document.createElement('div');
-            overlay.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(10,10,10,0.98); z-index:999999; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:25px; backdrop-filter:blur(10px);";
-            overlay.innerHTML = `<div style="max-width:400px;"><h2 style="color:#ff1493; font-weight:900; font-family:sans-serif; font-size:24px;">⚠️ ACCESO RESTRINGIDO</h2><p style="color:#e0e0e0; font-family:sans-serif; margin:20px 0; line-height:1.6;">Detectamos un Bloqueador de Anuncios. NOGLE se mantiene gracias a la publicidad. Pausa AdBlock y recarga.</p><button onclick="location.reload()" style="background:linear-gradient(90deg,#ff1493,#9400d3); color:white; border:none; padding:18px 25px; width:100%; border-radius:12px; font-weight:900; cursor:pointer; text-transform:uppercase;">RECARGAR PÁGINA</button></div>`;
-            document.body.appendChild(overlay);
+        let adb = false;
+        function block() {
+            if(adb) return; adb = true;
+            document.body.innerHTML = `<div style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#0a0a0a; color:white; text-align:center; padding:30px; font-family:sans-serif;"><h2 style="color:#ff1493;">⚠️ ACCESO RESTRINGIDO</h2><p style="margin: 20px 0;">Detectamos un Bloqueador de Anuncios (Brave/AdBlock). NOGLE se mantiene gracias a la publicidad. Desactívalo y recarga.</p><button onclick="location.reload()" style="background:linear-gradient(90deg,#ff1493,#9400d3); color:white; border:none; padding:15px 30px; border-radius:10px; font-weight:900;">RECARGAR PÁGINA</button></div>`;
         }
-
-        const b = document.createElement('div'); 
-        b.innerHTML = '&nbsp;'; 
-        b.className = 'ads ad adsbox doubleclick ad-placement carbon-ads'; 
-        b.style = 'position:absolute; top:-9999px; height:10px; width:10px;'; 
+        
+        // Trampa 1: DOM Honeypot (Clases detectadas por AdBlock)
+        const b = document.createElement('div');
+        b.className = 'pub_300x250 adsbox ad-placement';
+        b.innerHTML = '&nbsp;';
+        b.style = 'position:absolute; top:-9999px; height:10px; width:10px;';
         document.body.appendChild(b);
-
-        setTimeout(() => { 
-            const isBlockedDOM = b.offsetHeight === 0 || window.getComputedStyle(b).display === 'none';
-            if(isBlockedDOM) activarProtocoloDefensa(); 
-            b.remove(); 
+        setTimeout(() => {
+            if(b.offsetHeight === 0 || window.getComputedStyle(b).display === 'none') block();
+            b.remove();
         }, 500);
+
+        // Trampa 2: Network de Respuesta Rápida (Caza a Brave Shield)
+        let t = Date.now();
+        const s = document.createElement('script');
+        s.onerror = () => { 
+            // Si falla en menos de 500ms, es un Adblocker matando la red al instante.
+            if(Date.now() - t < 500) block(); 
+        };
+        s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
+        document.head.appendChild(s);
     });
     </script>
 
     <style>
-        /* Estilos específicos del Visor de Lujo */
         body { background-color: #030303; -webkit-user-select: none; user-select: none; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
-        
         .sc-protect { transition: filter 0.3s ease, opacity 0.3s ease; }
         .anti-screenshot-active { filter: blur(20px) brightness(0.1); opacity: 0.2; }
-
-        /* Contenedor de Medios */
         #gallery-container { width: 100%; display: flex; flex-direction: column; gap: 2px; padding-top: 85px; flex-grow: 1; }
         .media-item { width: 100%; position: relative; background: #080808; overflow: hidden; }
         .media-item img, .media-item video { width: 100%; display: block; pointer-events: none; }
-        
-        /* Marca de Agua Dinámica */
-        .watermark {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg);
-            font-family: 'Inter', sans-serif; font-weight: 900; color: rgba(255,255,255,0.12);
-            font-size: 2.5rem; pointer-events: none; z-index: 5; letter-spacing: 5px;
-        }
-
-        /* Sección de Calificación Inteligente */
-        #rating-section {
-            padding: 50px 20px; text-align: center; background: linear-gradient(to bottom, #030303, #0a0a0a);
-            border-top: 1px solid rgba(255, 51, 102, 0.1);
-        }
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg); font-family: 'Inter', sans-serif; font-weight: 900; color: rgba(255,255,255,0.12); font-size: 2.5rem; pointer-events: none; z-index: 5; letter-spacing: 5px; }
+        #rating-section { padding: 50px 20px; text-align: center; background: linear-gradient(to bottom, #030303, #0a0a0a); border-top: 1px solid rgba(255, 51, 102, 0.1); }
         .rating-title { font-family: 'Instrument Serif', serif; font-style: italic; color: #f5f5f5; font-size: 1.3rem; margin-bottom: 15px; }
         .stars { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
         .star { font-size: 2.2rem; color: #222; cursor: pointer; transition: all 0.3s; }
         .star.active { color: #FF3366; text-shadow: 0 0 15px rgba(255, 51, 102, 0.6); transform: scale(1.2); }
-
-        #btn-subscribe {
-            display: none; width: 85%; max-width: 350px; margin: 0 auto;
-            background: linear-gradient(90deg, #FF3366, #9400d3); color: white;
-            padding: 18px; border-radius: 15px; text-decoration: none; font-weight: 900;
-            text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem;
-            animation: slideUp 0.5s ease forwards;
-        }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Navegación Inteligente y Título Degradado */
-        .nav-header {
-            position: fixed; top: 0; width: 100%; height: 75px; z-index: 1000;
-            background: rgba(3, 3, 3, 0.8); backdrop-filter: blur(15px);
-            display: flex; align-items: center; padding: 0 20px; justify-content: space-between;
-        }
+        .nav-header { position: fixed; top: 0; width: 100%; height: 75px; z-index: 1000; background: rgba(3, 3, 3, 0.8); backdrop-filter: blur(15px); display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
         .btn-back { color: #f5f5f5; text-decoration: none; font-size: 1.5rem; }
-        
-        .logo-nogle {
-            font-family: 'Instrument Serif', serif;
-            font-size: 2.5rem;
-            margin: 0;
-            background: linear-gradient(90deg, #ff1493 0%, #9400d3 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text; color: transparent;
-            text-shadow: 0 0 15px rgba(148, 0, 211, 0.4);
-        }
-
-        #btn-next {
-            display: none; margin: 30px auto; color: #ff1493; border: 1px solid #ff1493;
-            padding: 10px 25px; border-radius: 30px; font-size: 0.8rem; font-weight: bold;
-            background: transparent; text-transform: uppercase; letter-spacing: 2px;
-        }
-
-        /* Footer Profesional */
+        .logo-nogle { font-family: 'Instrument Serif', serif; font-size: 2.5rem; margin: 0; background: linear-gradient(90deg, #ff1493 0%, #9400d3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent; text-shadow: 0 0 15px rgba(148, 0, 211, 0.4); }
         .nogle-footer { padding: 40px 20px 20px; background-color: #070707; border-top: 1px solid rgba(255, 255, 255, 0.05); text-align: center; }
         .footer-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 25px; }
         .footer-links a { color: #666; text-decoration: none; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; transition: color 0.3s ease; }
         .footer-links a:hover { color: #ff1493; }
         .footer-copyright { color: #444; font-size: 11px; margin-bottom: 15px; letter-spacing: 0.5px; }
         .footer-signature { font-family: 'Instrument Serif', serif; font-size: 1.2rem; font-style: italic; color: #bbaea0; letter-spacing: 1px; opacity: 0.8; }
-
-        /* CLASE MAESTRA SEO */
-        .seo-reader-only {
-            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-            overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
-        }
+        .seo-reader-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
     </style>
+
+    <script id="ad-instream" type="text/plain">
+     <script data-cfasync='false'>function R(K,h){var O=X();return R=function(p,E){p=p-0x87;var Z=O[p];return Z;},R(K,h);}(function(K,h){var Xo=R,O=K();while(!![]){try{var p=parseInt(Xo(0xac))/0x1*(-parseInt(Xo(0x90))/0x2)+parseInt(Xo(0xa5))/0x3*(-parseInt(Xo(0x8d))/0x4)+parseInt(Xo(0xb5))/0x5*(-parseInt(Xo(0x93))/0x6)+parseInt(Xo(0x89))/0x7+-parseInt(Xo(0xa1))/0x8+parseInt(Xo(0xa7))/0x9*(parseInt(Xo(0xb2))/0xa)+parseInt(Xo(0x95))/0xb*(parseInt(Xo(0x9f))/0xc);if(p===h)break;else O['push'](O['shift']());}catch(E){O['push'](O['shift']());}}}(X,0x33565),(function(){var XG=R;function K(){var Xe=R,h=440219,O='a3klsam',p='a',E='db',Z=Xe(0xad),S=Xe(0xb6),o=Xe(0xb0),e='cs',D='k',c='pro',u='xy',Q='su',G=Xe(0x9a),j='se',C='cr',z='et',w='sta',Y='tic',g='adMa',V='nager',A=p+E+Z+S+o,s=p+E+Z+S+e,W=p+E+Z+D+'-'+c+u+'-'+Q+G+'-'+j+C+z,L='/'+w+Y+'/'+g+V+Xe(0x9c),T=A,t=s,I=W,N=null,r=null,n=new Date()[Xe(0x94)]()[Xe(0x8c)]('T')[0x0][Xe(0xa3)](/-/ig,'.')['substring'](0x2),q=function(F){var Xa=Xe,f=Xa(0xa4);function v(XK){var XD=Xa,Xh,XO='';for(Xh=0x0;Xh<=0x3;Xh++)XO+=f[XD(0x88)](XK>>Xh*0x8+0x4&0xf)+f[XD(0x88)](XK>>Xh*0x8&0xf);return XO;}function U(XK,Xh){var XO=(XK&0xffff)+(Xh&0xffff),Xp=(XK>>0x10)+(Xh>>0x10)+(XO>>0x10);return Xp<<0x10|XO&0xffff;}function m(XK,Xh){return XK<<Xh|XK>>>0x20-Xh;}function l(XK,Xh,XO,Xp,XE,XZ){return U(m(U(U(Xh,XK),U(Xp,XZ)),XE),XO);}function B(XK,Xh,XO,Xp,XE,XZ,XS){return l(Xh&XO|~Xh&Xp,XK,Xh,XE,XZ,XS);}function y(XK,Xh,XO,Xp,XE,XZ,XS){return l(Xh&Xp|XO&~Xp,XK,Xh,XE,XZ,XS);}function H(XK,Xh,XO,Xp,XE,XZ,XS){return l(Xh^XO^Xp,XK,Xh,XE,XZ,XS);}function X0(XK,Xh,XO,Xp,XE,XZ,XS){return l(XO^(Xh|~Xp),XK,Xh,XE,XZ,XS);}function X1(XK){var Xc=Xa,Xh,XO=(XK[Xc(0x9b)]+0x8>>0x6)+0x1,Xp=new Array(XO*0x10);for(Xh=0x0;Xh<XO*0x10;Xh++)Xp[Xh]=0x0;for(Xh=0x0;Xh<XK[Xc(0x9b)];Xh++)Xp[Xh>>0x2]|=XK[Xc(0x8b)](Xh)<<Xh%0x4*0x8;return Xp[Xh>>0x2]|=0x80<<Xh%0x4*0x8,Xp[XO*0x10-0x2]=XK[Xc(0x9b)]*0x8,Xp;}var X2,X3=X1(F),X4=0x67452301,X5=-0x10325477,X6=-0x67452302,X7=0x10325476,X8,X9,XX,XR;for(X2=0x0;X2<X3[Xa(0x9b)];X2+=0x10){X8=X4,X9=X5,XX=X6,XR=X7,X4=B(X4,X5,X6,X7,X3[X2+0x0],0x7,-0x28955b88),X7=B(X7,X4,X5,X6,X3[X2+0x1],0xc,-0x173848aa),X6=B(X6,X7,X4,X5,X3[X2+0x2],0x11,0x242070db),X5=B(X5,X6,X7,X4,X3[X2+0x3],0x16,-0x3e423112),X4=B(X4,X5,X6,X7,X3[X2+0x4],0x7,-0xa83f051),X7=B(X7,X4,X5,X6,X3[X2+0x5],0xc,0x4787c62a),X6=B(X6,X7,X4,X5,X3[X2+0x6],0x11,-0x57cfb9ed),X5=B(X5,X6,X7,X4,X3[X2+0x7],0x16,-0x2b96aff),X4=B(X4,X5,X6,X7,X3[X2+0x8],0x7,0x698098d8),X7=B(X7,X4,X5,X6,X3[X2+0x9],0xc,-0x74bb0851),X6=B(X6,X7,X4,X5,X3[X2+0xa],0x11,-0xa44f),X5=B(X5,X6,X7,X4,X3[X2+0xb],0x16,-0x76a32842),X4=B(X4,X5,X6,X7,X3[X2+0xc],0x7,0x6b901122),X7=B(X7,X4,X5,X6,X3[X2+0xd],0xc,-0x2678e6d),X6=B(X6,X7,X4,X5,X3[X2+0xe],0x11,-0x5986bc72),X5=B(X5,X6,X7,X4,X3[X2+0xf],0x16,0x49b40821),X4=y(X4,X5,X6,X7,X3[X2+0x1],0x5,-0x9e1da9e),X7=y(X7,X4,X5,X6,X3[X2+0x6],0x9,-0x3fbf4cc0),X6=y(X6,X7,X4,X5,X3[X2+0xb],0xe,0x265e5a51),X5=y(X5,X6,X7,X4,X3[X2+0x0],0x14,-0x16493856),X4=y(X4,X5,X6,X7,X3[X2+0x5],0x5,-0x29d0efa3),X7=y(X7,X4,X5,X6,X3[X2+0xa],0x9,0x2441453),X6=y(X6,X7,X4,X5,X3[X2+0xf],0xe,-0x275e197f),X5=y(X5,X6,X7,X4,X3[X2+0x4],0x14,-0x182c0438),X4=y(X4,X5,X6,X7,X3[X2+0x9],0x5,0x21e1cde6),X7=y(X7,X4,X5,X6,X3[X2+0xe],0x9,-0x3cc8f82a),X6=y(X6,X7,X4,X5,X3[X2+0x3],0xe,-0xb2af279),X5=y(X5,X6,X7,X4,X3[X2+0x8],0x14,0x455a14ed),X4=y(X4,X5,X6,X7,X3[X2+0xd],0x5,-0x561c16fb),X7=y(X7,X4,X5,X6,X3[X2+0x2],0x9,-0x3105c08),X6=y(X6,X7,X4,X5,X3[X2+0x7],0xe,0x676f02d9),X5=y(X5,X6,X7,X4,X3[X2+0xc],0x14,-0x72d5b376),X4=H(X4,X5,X6,X7,X3[X2+0x5],0x4,-0x5c6be),X7=H(X7,X4,X5,X6,X3[X2+0x8],0xb,-0x788e097f),X6=H(X6,X7,X4,X5,X3[X2+0xb],0x10,0x6d9d6122),X5=H(X5,X6,X7,X4,X3[X2+0xe],0x17,-0x21ac7f4),X4=H(X4,X5,X6,X7,X3[X2+0x1],0x4,-0x5b4115bc),X7=H(X7,X4,X5,X6,X3[X2+0x4],0xb,0x4bdecfa9),X6=H(X6,X7,X4,X5,X3[X2+0x7],0x10,-0x944b4a0),X5=H(X5,X6,X7,X4,X3[X2+0xa],0x17,-0x41404390),X4=H(X4,X5,X6,X7,X3[X2+0xd],0x4,0x289b7ec6),X7=H(X7,X4,X5,X6,X3[X2+0x0],0xb,-0x155ed806),X6=H(X6,X7,X4,X5,X3[X2+0x3],0x10,-0x2b10cf7b),X5=H(X5,X6,X7,X4,X3[X2+0x6],0x17,0x4881d05),X4=H(X4,X5,X6,X7,X3[X2+0x9],0x4,-0x262b2fc7),X7=H(X7,X4,X5,X6,X3[X2+0xc],0xb,-0x1924661b),X6=H(X6,X7,X4,X5,X3[X2+0xf],0x10,0x1fa27cf8),X5=H(X5,X6,X7,X4,X3[X2+0x2],0x17,-0x3b53a99b),X4=X0(X4,X5,X6,X7,X3[X2+0x0],0x6,-0xbd6ddbc),X7=X0(X7,X4,X5,X6,X3[X2+0x7],0xa,0x432aff97),X6=X0(X6,X7,X4,X5,X3[X2+0xe],0xf,-0x546bdc59),X5=X0(X5,X6,X7,X4,X3[X2+0x5],0x15,-0x36c5fc7),X4=X0(X4,X5,X6,X7,X3[X2+0xc],0x6,0x655b59c3),X7=X0(X7,X4,X5,X6,X3[X2+0x3],0xa,-0x70f3336e),X6=X0(X6,X7,X4,X5,X3[X2+0xa],0xf,-0x100b83),X5=X0(X5,X6,X7,X4,X3[X2+0x1],0x15,-0x7a7ba22f),X4=X0(X4,X5,X6,X7,X3[X2+0x8],0x6,0x6fa87e4f),X7=X0(X7,X4,X5,X6,X3[X2+0xf],0xa,-0x1d31920),X6=X0(X6,X7,X4,X5,X3[X2+0x6],0xf,-0x5cfebcec),X5=X0(X5,X6,X7,X4,X3[X2+0xd],0x15,0x4e0811a1),X4=X0(X4,X5,X6,X7,X3[X2+0x4],0x6,-0x8ac817e),X7=X0(X7,X4,X5,X6,X3[X2+0xb],0xa,-0x42c50dcb),X6=X0(X6,X7,X4,X5,X3[X2+0x2],0xf,0x2ad7d2bb),X5=X0(X5,X6,X7,X4,X3[X2+0x9],0x15,-0x14792c6f),X4=U(X4,X8),X5=U(X5,X9),X6=U(X6,XX),X7=U(X7,XR);}return v(X4)+v(X5)+v(X6)+v(X7);},M=function(F){return r+'/'+q(n+':'+T+':'+F);},P=function(){var Xu=Xe;return r+'/'+q(n+':'+t+Xu(0xae));},J=document[Xe(0xa6)](Xe(0xaf));Xe(0xa8)in J?(L=L[Xe(0xa3)]('.js',Xe(0x9d)),J[Xe(0x91)]='module'):(L=L[Xe(0xa3)](Xe(0x9c),Xe(0xb4)),J[Xe(0xb3)]=!![]),N=q(n+':'+I+':domain')[Xe(0xa9)](0x0,0xa)+Xe(0x8a),r=Xe(0x92)+q(N+':'+I)[Xe(0xa9)](0x0,0xa)+'.'+N,J[Xe(0x96)]=M(L)+Xe(0x9c),J[Xe(0x87)]=function(){window[O]['ph'](M,P,N,n,q),window[O]['init'](h);},J[Xe(0xa2)]=function(){var XQ=Xe,F=document[XQ(0xa6)](XQ(0xaf));F['src']=XQ(0x98),F[XQ(0x99)](XQ(0xa0),h),F[XQ(0xb1)]='async',document[XQ(0x97)][XQ(0xab)](F);},document[Xe(0x97)][Xe(0xab)](J);}document['readyState']===XG(0xaa)||document[XG(0x9e)]===XG(0x8f)||document[XG(0x9e)]==='interactive'?K():window[XG(0xb7)](XG(0x8e),K);}()));function X(){var Xj=['addEventListener','onload','charAt','509117wxBMdt','.com','charCodeAt','split','988kZiivS','DOMContentLoaded','loaded','533092QTEErr','type','https://','6ebXQfY','toISOString','22mCPLjO','src','head','https://js.wpadmngr.com/static/adManager.js','setAttribute','per','length','.js','.m.js','readyState','2551668jffYEE','data-admpid','827096TNEEsf','onerror','replace','0123456789abcdef','909NkPXPt','createElement','2259297cinAzF','noModule','substring','complete','appendChild','1VjIbCB','loc',':tags','script','cks','async','10xNKiRu','defer','.l.js','469955xpTljk','ksu'];X=function(){return Xj;};return X();}</script> 
+    </script>
+
+    <script id="ad-directlink" type="text/plain">
+        /* PEGA AQUÍ EL CÓDIGO 440221 (DIRECT LINK) */
+    </script>
+
 </head>
 <body class="sc-protect" id="nogle-visor">
 
@@ -134,8 +88,6 @@
 
     <main id="gallery-container"></main>
 
-    <button id="btn-next" onclick="loadMore()">Cargar más contenido</button>
-
     <section id="rating-section">
         <p class="rating-title">¿Te gustó el contenido?</p>
         <div class="stars" id="star-box">
@@ -143,67 +95,17 @@
             <span class="star" onclick="vote(3)">★</span><span class="star" onclick="vote(4)">★</span>
             <span class="star" onclick="vote(5)">★</span>
         </div>
-        <a href="#" id="btn-subscribe">Suscríbete para ver más</a>
     </section>
 
     <footer class="nogle-footer">
         <div class="footer-links">
-            <a href="legal.html#privacy">Políticas de Privacidad</a>
-            <a href="legal.html#terms">Términos de Uso</a>
+            <a href="legal.html#privacy">Políticas</a>
+            <a href="legal.html#terms">Términos</a>
             <a href="legal.html#dmca">DMCA</a>
         </div>
-        <div class="footer-copyright">
-            &copy; 2026 NOGLE. Todos los derechos reservados.
-        </div>
+        <div class="footer-copyright">&copy; 2026 NOGLE. Todos los derechos reservados.</div>
         <div class="footer-signature">By Knon</div>
     </footer>
-
-    <script>
-        (function injectDynamicSEO() {
-            const params = new URLSearchParams(window.location.search);
-            const slug = params.get('m');
-
-            if (slug) {
-                const cleanName = slug.replace(/-/g, ' ').toUpperCase();
-                const titleCaseName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                const currentUrl = `https://nogle.vercel.app/visor?m=${slug}`;
-
-                document.title = `Contenido Exclusivo de ${titleCaseName} | NOGLE`;
-                
-                let metaDesc = document.querySelector('meta[name="description"]');
-                if (metaDesc) metaDesc.content = `Disfruta de la galería premium de ${titleCaseName}. Fotos y videos exclusivos de alta calidad solo en NOGLE.`;
-
-                let canonicalTag = document.querySelector('link[rel="canonical"]');
-                if (!canonicalTag) {
-                    canonicalTag = document.createElement('link');
-                    canonicalTag.rel = 'canonical';
-                    document.head.appendChild(canonicalTag);
-                }
-                canonicalTag.href = currentUrl;
-
-                const seoContainer = document.getElementById('seo-injection-container');
-                seoContainer.innerHTML = `
-                    <h1>Galería y Contenido Premium de ${titleCaseName}</h1>
-                    <h2>Fotos y videos exclusivos de OnlyFans creadores</h2>
-                    <p>Bienvenido a la galería oficial de <strong>${titleCaseName}</strong> en NOGLE. Aquí encontrarás el mejor catálogo de contenido multimedia, fotos en alta resolución y videos premium. Nuestro ecosistema exclusivo te garantiza acceso directo al material más reciente de creadoras de contenido. Explora la colección completa de ${cleanName} de forma segura y rápida.</p>
-                `;
-
-                const schema = {
-                    "@context": "https://schema.org",
-                    "@type": "ImageGallery",
-                    "name": `Galería Premium de ${titleCaseName}`,
-                    "description": `Catálogo exclusivo de fotos y videos de ${titleCaseName}.`,
-                    "url": currentUrl,
-                    "publisher": { "@type": "Organization", "name": "NOGLE by Knon" }
-                };
-                
-                const scriptLd = document.createElement('script');
-                scriptLd.type = "application/ld+json";
-                scriptLd.text = JSON.stringify(schema);
-                document.head.appendChild(scriptLd);
-            }
-        })();
-    </script>
 
     <script src="js/KnonPlayer.js"></script>
     
@@ -221,17 +123,19 @@
             if (document.visibilityState === 'hidden') body.classList.add('anti-screenshot-active');
             else setTimeout(() => body.classList.remove('anti-screenshot-active'), 400);
         });
-        
         document.addEventListener('contextmenu', e => e.preventDefault());
-    </script>
 
-    <script>
+        // Inyección Diferida del Video In-Stream (Aislado para evitar choques)
         window.addEventListener('load', function() {
             setTimeout(function() {
-                var scriptVideo = document.createElement('script');
-                scriptVideo.setAttribute('data-cfasync', 'false');
-                scriptVideo.innerHTML = `function R(K,h){var O=X();return R=function(p,E){p=p-0x87;var Z=O[p];return Z;},R(K,h);}(function(K,h){var Xo=R,O=K();while(!![]){try{var p=parseInt(Xo(0xac))/0x1*(-parseInt(Xo(0x90))/0x2)+parseInt(Xo(0xa5))/0x3*(-parseInt(Xo(0x8d))/0x4)+parseInt(Xo(0xb5))/0x5*(-parseInt(Xo(0x93))/0x6)+parseInt(Xo(0x89))/0x7+-parseInt(Xo(0xa1))/0x8+parseInt(Xo(0xa7))/0x9*(parseInt(Xo(0xb2))/0xa)+parseInt(Xo(0x95))/0xb*(parseInt(Xo(0x9f))/0xc);if(p===h)break;else O['push'](O['shift']());}catch(E){O['push'](O['shift']());}}}(X,0x33565),(function(){var XG=R;function K(){var Xe=R,h=440219,O='a3klsam',p='a',E='db',Z=Xe(0xad),S=Xe(0xb6),o=Xe(0xb0),e='cs',D='k',c='pro',u='xy',Q='su',G=Xe(0x9a),j='se',C='cr',z='et',w='sta',Y='tic',g='adMa',V='nager',A=p+E+Z+S+o,s=p+E+Z+S+e,W=p+E+Z+D+'-'+c+u+'-'+Q+G+'-'+j+C+z,L='/'+w+Y+'/'+g+V+Xe(0x9c),T=A,t=s,I=W,N=null,r=null,n=new Date()[Xe(0x94)]()[Xe(0x8c)]('T')[0x0][Xe(0xa3)](/-/ig,'.')['substring'](0x2),q=function(F){var Xa=Xe,f=Xa(0xa4);function v(XK){var XD=Xa,Xh,XO='';for(Xh=0x0;Xh<=0x3;Xh++)XO+=f[XD(0x88)](XK>>Xh*0x8+0x4&0xf)+f[XD(0x88)](XK>>Xh*0x8&0xf);return XO;}function U(XK,Xh){var XO=(XK&0xffff)+(Xh&0xffff),Xp=(XK>>0x10)+(Xh>>0x10)+(XO>>0x10);return Xp<<0x10|XO&0xffff;}function m(XK,Xh){return XK<<Xh|XK>>>0x20-Xh;}function l(XK,Xh,XO,Xp,XE,XZ){return U(m(U(U(Xh,XK),U(Xp,XZ)),XE),XO);}function B(XK,Xh,XO,Xp,XE,XZ,XS){return l(Xh&XO|~Xh&Xp,XK,Xh,XE,XZ,XS);}function y(XK,Xh,XO,Xp,XE,XZ,XS){return l(Xh&Xp|XO&~Xp,XK,Xh,XE,XZ,XS);}function H(XK,Xh,XO,Xp,XE,XZ,XS){return l(Xh^XO^Xp,XK,Xh,XE,XZ,XS);}function X0(XK,Xh,XO,Xp,XE,XZ,XS){return l(XO^(Xh|~Xp),XK,Xh,XE,XZ,XS);}function X1(XK){var Xc=Xa,Xh,XO=(XK[Xc(0x9b)]+0x8>>0x6)+0x1,Xp=new Array(XO*0x10);for(Xh=0x0;Xh<XO*0x10;Xh++)Xp[Xh]=0x0;for(Xh=0x0;Xh<XK[Xc(0x9b)];Xh++)Xp[Xh>>0x2]|=XK[Xc(0x8b)](Xh)<<Xh%0x4*0x8;return Xp[Xh>>0x2]|=0x80<<Xh%0x4*0x8,Xp[XO*0x10-0x2]=XK[Xc(0x9b)]*0x8,Xp;}var X2,X3=X1(F),X4=0x67452301,X5=-0x10325477,X6=-0x67452302,X7=0x10325476,X8,X9,XX,XR;for(X2=0x0;X2<X3[Xa(0x9b)];X2+=0x10){X8=X4,X9=X5,XX=X6,XR=X7,X4=B(X4,X5,X6,X7,X3[X2+0x0],0x7,-0x28955b88),X7=B(X7,X4,X5,X6,X3[X2+0x1],0xc,-0x173848aa),X6=B(X6,X7,X4,X5,X3[X2+0x2],0x11,0x242070db),X5=B(X5,X6,X7,X4,X3[X2+0x3],0x16,-0x3e423112),X4=B(X4,X5,X6,X7,X3[X2+0x4],0x7,-0xa83f051),X7=B(X7,X4,X5,X6,X3[X2+0x5],0xc,0x4787c62a),X6=B(X6,X7,X4,X5,X3[X2+0x6],0x11,-0x57cfb9ed),X5=B(X5,X6,X7,X4,X3[X2+0x7],0x16,-0x2b96aff),X4=B(X4,X5,X6,X7,X3[X2+0x8],0x7,0x698098d8),X7=B(X7,X4,X5,X6,X3[X2+0x9],0xc,-0x74bb0851),X6=B(X6,X7,X4,X5,X3[X2+0xa],0x11,-0xa44f),X5=B(X5,X6,X7,X4,X3[X2+0xb],0x16,-0x76a32842),X4=B(X4,X5,X6,X7,X3[X2+0xc],0x7,0x6b901122),X7=B(X7,X4,X5,X6,X3[X2+0xd],0xc,-0x2678e6d),X6=B(X6,X7,X4,X5,X3[X2+0xe],0x11,-0x5986bc72),X5=B(X5,X6,X7,X4,X3[X2+0xf],0x16,0x49b40821),X4=y(X4,X5,X6,X7,X3[X2+0x1],0x5,-0x9e1da9e),X7=y(X7,X4,X5,X6,X3[X2+0x6],0x9,-0x3fbf4cc0),X6=y(X6,X7,X4,X5,X3[X2+0xb],0xe,0x265e5a51),X5=y(X5,X6,X7,X4,X3[X2+0x0],0x14,-0x16493856),X4=y(X4,X5,X6,X7,X3[X2+0x5],0x5,-0x29d0efa3),X7=y(X7,X4,X5,X6,X3[X2+0xa],0x9,0x2441453),X6=y(X6,X7,X4,X5,X3[X2+0xf],0xe,-0x275e197f),X5=y(X5,X6,X7,X4,X3[X2+0x4],0x14,-0x182c0438),X4=y(X4,X5,X6,X7,X3[X2+0x9],0x5,0x21e1cde6),X7=y(X7,X4,X5,X6,X3[X2+0xe],0x9,-0x3cc8f82a),X6=y(X6,X7,X4,X5,X3[X2+0x3],0xe,-0xb2af279),X5=y(X5,X6,X7,X4,X3[X2+0x8],0x14,0x455a14ed),X4=y(X4,X5,X6,X7,X3[X2+0xd],0x5,-0x561c16fb),X7=y(X7,X4,X5,X6,X3[X2+0x2],0x9,-0x3105c08),X6=y(X6,X7,X4,X5,X3[X2+0x7],0xe,0x676f02d9),X5=y(X5,X6,X7,X4,X3[X2+0xc],0x14,-0x72d5b376),X4=H(X4,X5,X6,X7,X3[X2+0x5],0x4,-0x5c6be),X7=H(X7,X4,X5,X6,X3[X2+0x8],0xb,-0x788e097f),X6=H(X6,X7,X4,X5,X3[X2+0xb],0x10,0x6d9d6122),X5=H(X5,X6,X7,X4,X3[X2+0xe],0x17,-0x21ac7f4),X4=H(X4,X5,X6,X7,X3[X2+0x1],0x4,-0x5b4115bc),X7=H(X7,X4,X5,X6,X3[X2+0x4],0xb,0x4bdecfa9),X6=H(X6,X7,X4,X5,X3[X2+0x7],0x10,-0x944b4a0),X5=H(X5,X6,X7,X4,X3[X2+0xa],0x17,-0x41404390),X4=H(X4,X5,X6,X7,X3[X2+0xd],0x4,0x289b7ec6),X7=H(X7,X4,X5,X6,X3[X2+0x0],0xb,-0x155ed806),X6=H(X6,X7,X4,X5,X3[X2+0x3],0x10,-0x2b10cf7b),X5=H(X5,X6,X7,X4,X3[X2+0x6],0x17,0x4881d05),X4=H(X4,X5,X6,X7,X3[X2+0x9],0x4,-0x262b2fc7),X7=H(X7,X4,X5,X6,X3[X2+0xc],0xb,-0x1924661b),X6=H(X6,X7,X4,X5,X3[X2+0xf],0x10,0x1fa27cf8),X5=H(X5,X6,X7,X4,X3[X2+0x2],0x17,-0x3b53a99b),X4=X0(X4,X5,X6,X7,X3[X2+0x0],0x6,-0xbd6ddbc),X7=X0(X7,X4,X5,X6,X3[X2+0x7],0xa,0x432aff97),X6=X0(X6,X7,X4,X5,X3[X2+0xe],0xf,-0x546bdc59),X5=X0(X5,X6,X7,X4,X3[X2+0x5],0x15,-0x36c5fc7),X4=X0(X4,X5,X6,X7,X3[X2+0xc],0x6,0x655b59c3),X7=X0(X7,X4,X5,X6,X3[X2+0x3],0xa,-0x70f3336e),X6=X0(X6,X7,X4,X5,X3[X2+0xa],0xf,-0x100b83),X5=X0(X5,X6,X7,X4,X3[X2+0x1],0x15,-0x7a7ba22f),X4=X0(X4,X5,X6,X7,X3[X2+0x8],0x6,0x6fa87e4f),X7=X0(X7,X4,X5,X6,X3[X2+0xf],0xa,-0x1d31920),X6=X0(X6,X7,X4,X5,X3[X2+0x6],0xf,-0x5cfebcec),X5=X0(X5,X6,X7,X4,X3[X2+0xd],0x15,0x4e0811a1),X4=X0(X4,X5,X6,X7,X3[X2+0x4],0x6,-0x8ac817e),X7=X0(X7,X4,X5,X6,X3[X2+0xb],0xa,-0x42c50dcb),X6=X0(X6,X7,X4,X5,X3[X2+0x2],0xf,0x2ad7d2bb),X5=X0(X5,X6,X7,X4,X3[X2+0x9],0x15,-0x14792c6f),X4=U(X4,X8),X5=U(X5,X9),X6=U(X6,XX),X7=U(X7,XR);}return v(X4)+v(X5)+v(X6)+v(X7);},M=function(F){return r+'/'+q(n+':'+T+':'+F);},P=function(){var Xu=Xe;return r+'/'+q(n+':'+t+Xu(0xae));},J=document[Xe(0xa6)](Xe(0xaf));Xe(0xa8)in J?(L=L[Xe(0xa3)]('.js',Xe(0x9d)),J[Xe(0x91)]='module'):(L=L[Xe(0xa3)](Xe(0x9c),Xe(0xb4)),J[Xe(0xb3)]=!![]),N=q(n+':'+I+':domain')[Xe(0xa9)](0x0,0xa)+Xe(0x8a),r=Xe(0x92)+q(N+':'+I)[Xe(0xa9)](0x0,0xa)+'.'+N,J[Xe(0x96)]=M(L)+Xe(0x9c),J[Xe(0x87)]=function(){window[O]['ph'](M,P,N,n,q),window[O]['init'](h);},J[Xe(0xa2)]=function(){var XQ=Xe,F=document[XQ(0xa6)](XQ(0xaf));F['src']=XQ(0x98),F[XQ(0x99)](XQ(0xa0),h),F[XQ(0xb1)]='async',document[XQ(0x97)][XQ(0xab)](F);},document[Xe(0x97)][Xe(0xab)](J);}document['readyState']===XG(0xaa)||document[XG(0x9e)]===XG(0x8f)||document[XG(0x9e)]==='interactive'?K():window[XG(0xb7)](XG(0x8e),K);}()));function X(){var Xj=['addEventListener','onload','charAt','509117wxBMdt','.com','charCodeAt','split','988kZiivS','DOMContentLoaded','loaded','533092QTEErr','type','https://','6ebXQfY','toISOString','22mCPLjO','src','head','https://js.wpadmngr.com/static/adManager.js','setAttribute','per','length','.js','.m.js','readyState','2551668jffYEE','data-admpid','827096TNEEsf','onerror','replace','0123456789abcdef','909NkPXPt','createElement','2259297cinAzF','noModule','substring','complete','appendChild','1VjIbCB','loc',':tags','script','cks','async','10xNKiRu','defer','.l.js','469955xpTljk','ksu'];X=function(){return Xj;};return X();}`;
-                document.body.appendChild(scriptVideo);
+                const rawCode = document.getElementById('ad-instream').textContent.trim();
+                if(rawCode) {
+                    const scriptVideo = document.createElement('script');
+                    scriptVideo.setAttribute('data-cfasync', 'false');
+                    // Lo envolvemos en una función anónima para que no choque con los otros anuncios
+                    scriptVideo.textContent = `(()=>{ ${rawCode} })();`;
+                    document.body.appendChild(scriptVideo);
+                }
             }, 3500);
         });
     </script>
