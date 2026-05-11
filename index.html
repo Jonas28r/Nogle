@@ -24,81 +24,36 @@
     <meta name="rating" content="adult">
     <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
 
-    <script>
+        <script>
     document.addEventListener("DOMContentLoaded", function() {
         let adblockDetectado = false;
-
         function activarProtocoloDefensa() {
-            if (adblockDetectado) return; 
+            if (adblockDetectado) return;
             adblockDetectado = true;
-            
-            document.body.style.overflow = 'hidden'; 
+            document.body.style.overflow = 'hidden';
             const gallery = document.getElementById('main-catalog');
-            if(gallery) gallery.style.display = 'none'; 
-
+            if(gallery) gallery.style.display = 'none';
             const overlay = document.createElement('div');
-            overlay.id = 'nogle-adblock-wall';
-            overlay.style = `
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(10, 10, 10, 0.98); z-index: 999999;
-                display: flex; flex-direction: column; justify-content: center; align-items: center;
-                text-align: center; padding: 25px; box-sizing: border-box;
-                backdrop-filter: blur(10px);
-            `;
-            
-            overlay.innerHTML = `
-                <div style="max-width: 400px; width: 100%;">
-                    <h2 style="color: #ff1493; margin-bottom: 15px; font-weight: 900; letter-spacing: 2px; font-family: 'Inter', sans-serif; font-size: 24px;">
-                        ⚠️ ACCESO RESTRINGIDO ⚠️
-                    </h2>
-                    <p style="color: #e0e0e0; margin-bottom: 25px; font-size: 15px; line-height: 1.6; font-family: 'Inter', sans-serif;">
-                        Hemos detectado un <b>Bloqueador de Anuncios</b> activo en tu dispositivo. 
-                        <br><br>
-                        Los servidores y el contenido exclusivo de <b>NOGLE</b> se mantienen 100% gracias a la publicidad. Para desbloquear el catálogo, pausa tu AdBlocker y recarga la página.
-                    </p>
-                    <button onclick="location.reload()" style="
-                        background: linear-gradient(90deg, #ff1493, #9400d3);
-                        color: white; border: none; padding: 18px 25px; width: 100%;
-                        border-radius: 12px; font-weight: 900; letter-spacing: 1px;
-                        text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif;
-                        box-shadow: 0 4px 20px rgba(255, 20, 147, 0.4); font-size: 14px;
-                    ">
-                        Ya lo desactivé, Entrar
-                    </button>
-                </div>
-            `;
+            overlay.style = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(10,10,10,0.98); z-index:999999; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:25px; backdrop-filter:blur(10px);";
+            overlay.innerHTML = `<div style="max-width:400px;"><h2 style="color:#ff1493; font-weight:900; font-family:sans-serif; font-size:24px;">⚠️ ACCESO RESTRINGIDO</h2><p style="color:#e0e0e0; font-family:sans-serif; margin:20px 0; line-height:1.6;">Detectamos un Bloqueador de Anuncios. NOGLE se mantiene gracias a la publicidad. Pausa AdBlock y recarga.</p><button onclick="location.reload()" style="background:linear-gradient(90deg,#ff1493,#9400d3); color:white; border:none; padding:18px 25px; width:100%; border-radius:12px; font-weight:900; cursor:pointer; text-transform:uppercase;">RECARGAR PÁGINA</button></div>`;
             document.body.appendChild(overlay);
         }
 
-        // TRAMPA 1: DOM
-        const baitDiv = document.createElement('div');
-        baitDiv.innerHTML = '&nbsp;';
-        baitDiv.className = 'ads ad adsbox doubleclick ad-placement carbon-ads advert banner-ad';
-        baitDiv.style.position = 'absolute';
-        baitDiv.style.top = '-9999px';
-        baitDiv.style.height = '10px';
-        baitDiv.style.width = '10px';
-        document.body.appendChild(baitDiv);
+        // TRAMPA 1: Única trampa activa (DOM seguro)
+        const b = document.createElement('div'); 
+        b.innerHTML = '&nbsp;'; 
+        b.className = 'ads ad adsbox doubleclick ad-placement carbon-ads'; 
+        b.style = 'position:absolute; top:-9999px; height:10px; width:10px;'; 
+        document.body.appendChild(b);
 
-        setTimeout(function() {
-            const isBlockedDOM = baitDiv.offsetHeight === 0 || window.getComputedStyle(baitDiv).display === 'none';
-            if (isBlockedDOM) activarProtocoloDefensa();
-            baitDiv.remove(); 
-        }, 300);
-
-        // TRAMPA 2: Network
-        const baitNetwork = document.createElement('script');
-        baitNetwork.onerror = function() { activarProtocoloDefensa(); };
-        baitNetwork.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
-        document.head.appendChild(baitNetwork);
-
-        // TRAMPA 3: Fetch
-        setTimeout(function() {
-            fetch("https://ad.doubleclick.net/favicon.ico", { mode: 'no-cors', cache: 'no-store' })
-                .catch(function() { activarProtocoloDefensa(); });
-        }, 100);
+        setTimeout(() => { 
+            const isBlockedDOM = b.offsetHeight === 0 || window.getComputedStyle(b).display === 'none';
+            if(isBlockedDOM) activarProtocoloDefensa(); 
+            b.remove(); 
+        }, 500);
     });
     </script>
+
     
     <script type="application/ld+json">
     {
