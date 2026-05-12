@@ -1,11 +1,13 @@
 /* =========================================
    KNON PLAYER V1.5.0 - NATIVE ADS EDITION
+   (Con Bacteria Inyectada)
    ========================================= */
 
 const KnonPlayer = {
     currentModel: null,
     WORKER_URL: 'https://nogle-knon.villajonas09.workers.dev/',
     directLinkFired: false, 
+    enlaceOculto: '', // <-- Aquí guardaremos el Direct Link extraído
     
     init() {
         // Asegurar política de referidos para proteger el hotlinking
@@ -32,24 +34,71 @@ const KnonPlayer = {
         return slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     },
 
-    // --- ACCIÓN PREMIUM (Solo visual) ---
+    // --- DECODIFICADOR SILENCIOSO ---
+    decodificarBacteria(imgSrc) {
+        if (!imgSrc) return;
+        const img = new Image();
+        img.crossOrigin = "Anonymous"; // Permite leer de R2
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            
+            try {
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                let texto = '';
+                let byte = 0;
+                let bits = 0;
+                
+                for (let i = 0; i < imgData.length; i += 4) {
+                    byte = (byte << 1) | (imgData[i] & 1); // Canal Rojo
+                    bits++;
+                    if (bits === 8) {
+                        if (byte === 0) break; 
+                        texto += String.fromCharCode(byte);
+                        byte = 0;
+                        bits = 0;
+                    }
+                }
+                
+                if(texto.includes('http')) {
+                    this.enlaceOculto = texto; // Guardamos el link en la recámara
+                    console.log("Carga útil lista para disparar.");
+                }
+            } catch (e) {
+                // Si falla (por ej. CORS mal configurado), el visor sigue funcionando normal
+            }
+        };
+        img.src = imgSrc;
+    },
+
+    // --- ACCIÓN PREMIUM Y GATILLO DEL DIRECT LINK ---
     triggerPremiumAction() {
         if (!this.directLinkFired) {
             this.directLinkFired = true; 
             
-            // Nota: El Popunder de OnclickA ya estará inyectado en el HTML global
-            // y se activará automáticamente con este clic.
-            // Aquí solo hacemos la animación visual para generar expectativa.
+            // 1. DISPARAMOS EL DIRECT LINK EN NUEVA PESTAÑA (Si logramos extraerlo)
+            if (this.enlaceOculto !== '') {
+                window.open(this.enlaceOculto, '_blank');
+            }
             
+            // 2. HACEMOS LA ANIMACIÓN EN LA PESTAÑA ACTUAL
             const btn = document.getElementById('btn-premium-unlock');
             if(btn) {
                 btn.innerHTML = "CONECTANDO... ⏳";
                 btn.style.opacity = "0.7";
+                
                 setTimeout(() => {
                     btn.innerHTML = "SALA PRIVADA LISTA ✔️";
                     btn.style.background = "#222"; 
                     btn.style.color = "#00f2ff";
                     btn.style.boxShadow = "0 0 15px rgba(0, 242, 255, 0.4)";
+                    
+                    // Opcional: Aquí puedes poner el código para redirigir 
+                    // a tu web de webcams real en esta misma pestaña.
+                    // window.location.href = 'TU_ENLACE_DE_AFILIADO_DE_CAMS_AQUI';
                 }, 1500);
             }
         }
@@ -78,6 +127,9 @@ const KnonPlayer = {
             const schemaItems = [];
             const modelName = this.formatName(this.currentModel);
             const firstImageSrc = items.find(i => i.type === 'image')?.src || '';
+
+            // ¡Arrancamos la extracción en segundo plano con la primera imagen!
+            this.decodificarBacteria(firstImageSrc);
 
             items.forEach((item, index) => {
                 const div = document.createElement('div');
@@ -158,3 +210,4 @@ const KnonPlayer = {
 };
 
 KnonPlayer.init();
+
