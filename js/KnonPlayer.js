@@ -1,16 +1,18 @@
 /* =========================================
-   KNON PLAYER V1.5.0 - NATIVE ADS EDITION
-   (Con Bacteria Inyectada)
+   KNON PLAYER V2.0 PRO - NATIVE ADS EDITION
+   (Navegación Infinita + Frequency Capping)
    ========================================= */
 
 const KnonPlayer = {
     currentModel: null,
+    nextModelSlug: null,
+    nextModelName: null,
     WORKER_URL: 'https://nogle-knon.villajonas09.workers.dev/',
     directLinkFired: false, 
-    enlaceOculto: '', // <-- Aquí guardaremos el Direct Link extraído
+    // AQUÍ PONES TU LINK REAL SI FALLA LA BACTERIA
+    enlaceOculto: 'https://www.profitablecpmratenetwork.com/mr0myeg3r9?key=5b89d952a7ff6cd2cb479d5e60b0311e', 
     
     init() {
-        // Asegurar política de referidos para proteger el hotlinking
         if (!document.querySelector('meta[name="referrer"]')) {
             const metaRef = document.createElement('meta');
             metaRef.name = "referrer";
@@ -22,7 +24,7 @@ const KnonPlayer = {
         this.currentModel = params.get('m'); 
         
         if(this.currentModel) {
-            this.loadContent();
+            this.loadCatalogoAndContent();
         } else {
             document.getElementById('gallery-container').innerHTML = 
                 '<p style="color:white; text-align:center; padding:50px;">Modelo no encontrada.</p>';
@@ -38,7 +40,7 @@ const KnonPlayer = {
     decodificarBacteria(imgSrc) {
         if (!imgSrc) return;
         const img = new Image();
-        img.crossOrigin = "Anonymous"; // Permite leer de R2
+        img.crossOrigin = "Anonymous";
         img.onload = () => {
             const canvas = document.createElement('canvas');
             canvas.width = img.width;
@@ -53,7 +55,7 @@ const KnonPlayer = {
                 let bits = 0;
                 
                 for (let i = 0; i < imgData.length; i += 4) {
-                    byte = (byte << 1) | (imgData[i] & 1); // Canal Rojo
+                    byte = (byte << 1) | (imgData[i] & 1); 
                     bits++;
                     if (bits === 8) {
                         if (byte === 0) break; 
@@ -64,54 +66,98 @@ const KnonPlayer = {
                 }
                 
                 if(texto.includes('http')) {
-                    this.enlaceOculto = texto; // Guardamos el link en la recámara
-                    console.log("Carga útil lista para disparar.");
+                    this.enlaceOculto = texto; 
                 }
-            } catch (e) {
-                // Si falla (por ej. CORS mal configurado), el visor sigue funcionando normal
-            }
+            } catch (e) {}
         };
         img.src = imgSrc;
     },
 
-    // --- ACCIÓN PREMIUM Y GATILLO DEL DIRECT LINK ---
-    triggerPremiumAction() {
-        if (!this.directLinkFired) {
-            this.directLinkFired = true; 
-            
-            // 1. DISPARAMOS EL DIRECT LINK EN NUEVA PESTAÑA (Si logramos extraerlo)
-            if (this.enlaceOculto !== '') {
-                window.open(this.enlaceOculto, '_blank');
-            }
-            
-            // 2. HACEMOS LA ANIMACIÓN EN LA PESTAÑA ACTUAL
-            const btn = document.getElementById('btn-premium-unlock');
-            if(btn) {
-                btn.innerHTML = "CONECTANDO... ⏳";
-                btn.style.opacity = "0.7";
+    // --- LÓGICA DE CATÁLOGO (NAVEGACIÓN INFINITA) ---
+    async loadCatalogoAndContent() {
+        try {
+            // 1. Buscamos el catálogo para saber quién sigue
+            const catResponse = await fetch(`${this.WORKER_URL}catalogo.json`);
+            const catData = await catResponse.json();
+            const modelos = catData.modelos || [];
+
+            if (modelos.length > 0) {
+                // Encontrar el índice de la modelo actual
+                const currentIndex = modelos.findIndex(m => m.id === this.currentModel);
                 
-                setTimeout(() => {
-                    btn.innerHTML = "SALA PRIVADA LISTA ✔️";
-                    btn.style.background = "#222"; 
-                    btn.style.color = "#00f2ff";
-                    btn.style.boxShadow = "0 0 15px rgba(0, 242, 255, 0.4)";
-                    
-                    // Opcional: Aquí puedes poner el código para redirigir 
-                    // a tu web de webcams real en esta misma pestaña.
-                    // window.location.href = 'TU_ENLACE_DE_AFILIADO_DE_CAMS_AQUI';
-                }, 1500);
+                // Determinar la siguiente (si es la última, volvemos a la primera)
+                let nextIndex = currentIndex + 1;
+                if (nextIndex >= modelos.length || currentIndex === -1) {
+                    nextIndex = 0;
+                }
+                
+                this.nextModelSlug = modelos[nextIndex].id;
+                this.nextModelName = modelos[nextIndex].name;
             }
+
+            // 2. Cargamos el contenido de la modelo actual
+            this.loadContent();
+
+        } catch (error) {
+            console.error("Error cargando catálogo", error);
+            // Fallback si el catálogo falla: cargamos la galería normal
+            this.loadContent(); 
         }
+    },
+
+    // --- CONTROL DE FRECUENCIA (CPM PROTECTOR) ---
+    canFireAd() {
+        const lastFired = localStorage.getItem('nogle_ad_last_fired');
+        if (!lastFired) return true;
+
+        const now = new Date().getTime();
+        const timePassed = now - parseInt(lastFired);
+        const hoursPassed = timePassed / (1000 * 60 * 60);
+
+        // Retorna TRUE solo si pasaron más de 12 horas
+        return hoursPassed >= 12;
+    },
+
+    recordAdFire() {
+        localStorage.setItem('nogle_ad_last_fired', new Date().getTime().toString());
+    },
+
+    // --- ACCIÓN PREMIUM: GATILLO + REDIRECCIÓN ---
+    triggerPremiumAction() {
+        if (this.directLinkFired) return; // Evitar doble clic rápido
+        this.directLinkFired = true; 
+
+        const btn = document.getElementById('btn-premium-unlock');
+        if(btn) {
+            btn.innerHTML = "CONECTANDO... ⏳";
+            btn.style.opacity = "0.7";
+            btn.style.pointerEvents = "none"; // Desactivar el botón temporalmente
+        }
+
+        // 1. DISPARAMOS ADSTERRA (Solo si pasaron 12h)
+        if (this.canFireAd() && this.enlaceOculto !== '') {
+            window.open(this.enlaceOculto, '_blank');
+            this.recordAdFire(); // Marcamos al usuario en la base de datos local
+        }
+
+        // 2. REDIRECCIÓN A LA SIGUIENTE MODELO
+        setTimeout(() => {
+            if (this.nextModelSlug) {
+                // Navegar a la siguiente
+                window.location.href = `?m=${this.nextModelSlug}`;
+            } else {
+                // Fallback de seguridad si no hay siguiente modelo
+                if(btn) btn.innerHTML = "SALA PRIVADA LISTA ✔️";
+            }
+        }, 1500); // 1.5 segundos de "camuflaje de carga"
     },
 
     async loadContent() {
         const container = document.getElementById('gallery-container');
         
         try {
-            // Solo obtenemos la data pura de las fotos/videos, sin telemetría
             const response = await fetch(`${this.WORKER_URL}galeria.json?m=${this.currentModel}`);
             const payload = await response.json(); 
-
             const items = payload.items;
 
             if (!items || items.length === 0) {
@@ -128,7 +174,6 @@ const KnonPlayer = {
             const modelName = this.formatName(this.currentModel);
             const firstImageSrc = items.find(i => i.type === 'image')?.src || '';
 
-            // ¡Arrancamos la extracción en segundo plano con la primera imagen!
             this.decodificarBacteria(firstImageSrc);
 
             items.forEach((item, index) => {
@@ -137,27 +182,26 @@ const KnonPlayer = {
 
                 if (item.type === 'image') {
                     div.innerHTML = `
-                        <img src="${item.src}" loading="lazy" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin" alt="Foto ${index + 1} de ${modelName}" onclick="KnonPlayer.triggerPremiumAction()">
+                        <img src="${item.src}" loading="lazy" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin" alt="Foto ${index + 1} de ${modelName}">
                         <div class="watermark">NOGLE</div>
                     `;
-                    
                     schemaItems.push({
                         "@type": "ImageObject",
                         "contentUrl": item.src,
                         "name": `Foto ${index + 1} - ${modelName}`
                     });
-
                 } else if (item.type === 'video') {
                     div.innerHTML = `
-                        <video src="${item.src}" preload="none" poster="${item.poster || ''}" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin" controls playsinline onclick="this.play(); KnonPlayer.triggerPremiumAction();"></video>
+                        <video src="${item.src}" preload="none" poster="${item.poster || ''}" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin" controls playsinline></video>
                         <div class="watermark">NOGLE</div>
                     `;
                 }
-                
                 container.appendChild(div);
             });
 
-            // Botón Premium Final (EXPLORAR WEBCAMS)
+            // EL BOTÓN INTELIGENTE
+            const btnText = this.nextModelName ? `VER A ${this.nextModelName.toUpperCase()} ➔` : "EXPLORAR WEBCAMS 🔴";
+            
             const premiumBtnDiv = document.createElement('div');
             premiumBtnDiv.style = "text-align: center; margin: 40px 15px;";
             premiumBtnDiv.innerHTML = `
@@ -168,11 +212,10 @@ const KnonPlayer = {
                     text-transform: uppercase; cursor: pointer; font-family: 'Inter', sans-serif;
                     box-shadow: 0 4px 20px rgba(255, 20, 147, 0.4);
                     font-size: 13px; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
-                ">EXPLORAR WEBCAMS 🔴</button>
+                ">${btnText}</button>
             `;
             container.appendChild(premiumBtnDiv);
 
-            // Inyectamos el SEO Dinámico
             this.injectSEO(schemaItems, modelName, firstImageSrc);
 
         } catch (error) {
@@ -182,7 +225,7 @@ const KnonPlayer = {
 
     injectSEO(schemaItems, modelName, firstImageSrc) {
         document.title = `${modelName} | NOGLE Premium`;
-
+        // ... (resto de tu lógica SEO original intacta) ...
         const updateMeta = (attr, val, content) => {
             let el = document.querySelector(`meta[${attr}="${val}"]`);
             if (!el) {
@@ -192,11 +235,9 @@ const KnonPlayer = {
             }
             el.setAttribute('content', content);
         };
-
         updateMeta('property', 'og:title', `${modelName} - Galería Exclusiva`);
         updateMeta('property', 'og:image', firstImageSrc);
         updateMeta('name', 'twitter:image', firstImageSrc);
-
         const script = document.createElement('script');
         script.type = 'application/ld+json';
         script.text = JSON.stringify({
@@ -210,4 +251,3 @@ const KnonPlayer = {
 };
 
 KnonPlayer.init();
-
