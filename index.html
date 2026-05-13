@@ -24,11 +24,7 @@
     <meta name="rating" content="adult">
     <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
 
-    <!-- ==========================================
-         SCRIPT ANTI-ADBLOCK (COMENTADO TEMPORALMENTE)
-         Para activarlo de nuevo, solo borra el "<!--" de arriba y el "-->" de abajo.
-         ========================================== -->
-    <!--
+    <!-- SCRIPT ANTI-ADBLOCK COMENTADO TEMPORALMENTE 
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         let adblockDetectado = false;
@@ -44,7 +40,6 @@
             document.body.appendChild(overlay);
         }
 
-        // TRAMPA 1: Única trampa activa (DOM seguro - Sin forzar dimensiones)
         const b = document.createElement('div'); 
         b.innerHTML = '&nbsp;'; 
         b.className = 'ads ad adsbox doubleclick ad-placement carbon-ads'; 
@@ -57,10 +52,10 @@
             const isBlockedDOM = b.offsetHeight === 0 || window.getComputedStyle(b).display === 'none';
             if(isBlockedDOM) activarProtocoloDefensa(); 
             b.remove(); 
-        }, 800); // 800ms para asegurar la detección en navegadores lentos
+        }, 800);
     });
     </script>
-    -->
+    FIN DEL SCRIPT COMENTADO -->
     
     <script type="application/ld+json">
     {
