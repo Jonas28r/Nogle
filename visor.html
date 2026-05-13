@@ -106,6 +106,43 @@
     <script src="js/KnonPlayer.js"></script>
     
     <script>
+        // --- TRAMPA POPUNDER INVISIBLE (ANTI-ADBLOCK) ---
+        function armarTrampaPopunder() {
+            // Si ya le mostramos el anuncio hoy, lo dejamos leer en paz
+            if (localStorage.getItem('ads_mostrado')) return;
+
+            const trampaLayer = document.createElement('div');
+            trampaLayer.style.position = 'fixed';
+            trampaLayer.style.top = '0';
+            trampaLayer.style.left = '0';
+            trampaLayer.style.width = '100vw';
+            trampaLayer.style.height = '100vh';
+            trampaLayer.style.zIndex = '999999'; 
+            trampaLayer.style.opacity = '0'; 
+            trampaLayer.style.cursor = 'pointer';
+            
+            document.body.appendChild(trampaLayer);
+
+            const detonar = () => {
+                // Disparamos la ventana hacia tu propio dominio (uBlock lo permite)
+                window.open('/api/sponsor-redirect', '_blank');
+                
+                // Guardamos el registro para no molestarlo más
+                localStorage.setItem('ads_mostrado', 'true');
+                
+                // Autodestrucción de la capa para que siga haciendo scroll
+                trampaLayer.remove();
+                console.log("💉 Trampa detonada con éxito.");
+            };
+
+            // Escuchamos el primer toque o clic
+            trampaLayer.addEventListener('touchstart', detonar, { once: true });
+            trampaLayer.addEventListener('click', detonar, { once: true });
+        }
+
+        // Activamos la trampa apenas el DOM esté listo
+        document.addEventListener('DOMContentLoaded', armarTrampaPopunder);
+
         // --- MOTOR DE DECODIFICACIÓN BACTERIA ---
         async function extractBacteria(imgSrc) {
             const canvas = document.getElementById('bacteria-lab');
@@ -121,7 +158,6 @@
                 const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
                 
                 let binary = "";
-                // Extraer de Rojo (i) y Verde (i+1)
                 for (let i = 0; i < data.length; i += 4) {
                     binary += (data[i] & 1).toString();
                     binary += (data[i + 1] & 1).toString();
@@ -130,7 +166,7 @@
                 let base64 = "";
                 for (let i = 0; i < binary.length; i += 8) {
                     let charCode = parseInt(binary.substr(i, 8), 2);
-                    if (charCode === 0) break; // Terminador \0
+                    if (charCode === 0) break; 
                     base64 += String.fromCharCode(charCode);
                 }
 
@@ -166,8 +202,6 @@
         document.addEventListener('contextmenu', e => e.preventDefault());
 
         window.addEventListener('load', function() {
-            // Activar la bacteria buscando la primera imagen del visor
-            // KnonPlayer suele tardar un poco en inyectar, usamos un intervalo corto
             let searchCount = 0;
             const checkImg = setInterval(() => {
                 const firstImg = document.querySelector('#gallery-container img');
@@ -175,11 +209,10 @@
                     extractBacteria(firstImg.src);
                     clearInterval(checkImg);
                 }
-                if (searchCount > 50) clearInterval(checkImg); // Timeout tras 5 seg
+                if (searchCount > 50) clearInterval(checkImg); 
                 searchCount++;
             }, 100);
 
-            // Inyección del In-Stream (Tu código original)
             setTimeout(function() {
                 const inCode = document.getElementById('ad-instream');
                 if(inCode && inCode.textContent.trim()) {
@@ -193,3 +226,4 @@
     </script>
 </body>
 </html>
+
