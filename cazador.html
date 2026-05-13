@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Radar Knon V2</title>
+    <style>
+        body { background: #0a0a0a; color: #00ff00; font-family: monospace; padding: 20px; text-align: center; }
+        textarea { width: 100%; height: 150px; background: #111; color: #00ff00; border: 1px solid #ff1493; margin-top: 10px; padding: 10px; font-size: 14px; }
+        .instrucciones { color: #fff; font-family: sans-serif; margin-bottom: 20px; }
+        #consola { text-align: left; background: #222; padding: 10px; font-size: 10px; margin-top: 20px; color: #aaa; height: 150px; overflow-y: scroll; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="instrucciones">
+        <h2>Radar Fantasma</h2>
+        <p>Toca la pantalla un par de veces.</p>
+    </div>
+
+    <div id="resultado"><h2>Esperando disparo...</h2></div>
+    <div id="consola"><strong>Logs del Sistema:</strong><br></div>
+
+    <script>
+        // Imprimir errores en pantalla
+        const consolaDiv = document.getElementById('consola');
+        function log(msg, color='green') { consolaDiv.innerHTML += `<span style="color:${color}">> ${msg}</span><br>`; }
+        
+        window.onerror = function(msg, url, line) { log(`Error: ${msg} (Línea ${line})`, 'red'); return false; };
+
+        // EL PROXY: Secuestramos window.open de forma 100% indetectable
+        window.open = new Proxy(window.open, {
+            apply: function(target, thisArg, argumentsList) {
+                const url = argumentsList[0] || "URL desconocida";
+                log("¡Adsterra intentó abrir una ventana!", "#ff1493");
+                document.getElementById('resultado').innerHTML = 
+                    "<h2 style='color:#ff1493;'>🎯 ¡URL CAPTURADA!</h2>" +
+                    "<textarea>" + url + "</textarea>";
+                return null; // Bloqueamos la apertura real
+            }
+        });
+
+        // Secuestro de enlaces alternativos
+        document.addEventListener('click', function(e) {
+            let elemento = e.target;
+            while (elemento) {
+                if (elemento.tagName === 'A' && elemento.href) {
+                    if(!elemento.href.includes(window.location.hostname)) {
+                        e.preventDefault();
+                        log("¡Adsterra intentó usar un enlace falso!", "#ff1493");
+                        document.getElementById('resultado').innerHTML = 
+                            "<h2 style='color:#ff1493;'>🎯 ¡URL CAPTURADA!</h2>" +
+                            "<textarea>" + elemento.href + "</textarea>";
+                        return false;
+                    }
+                }
+                elemento = elemento.parentElement;
+            }
+        }, true);
+        
+        log("Radar armado. Esperando script de Adsterra...");
+    </script>
+
+    <!-- Script objetivo -->
+    <script src="https://pl29430597.profitablecpmratenetwork.com/48/9f/d2/489fd23120820292cb2f5bba04598957.js"></script>
+</body>
+</html>
+
