@@ -1,6 +1,6 @@
 /* =========================================
    KNON PLAYER V2.0 PRO - NATIVE ADS EDITION
-   (Navegación Infinita + Frequency Capping)
+   (Navegación Infinita + Floating Dynamic Menu)
    ========================================= */
 
 const KnonPlayer = {
@@ -9,8 +9,9 @@ const KnonPlayer = {
     nextModelName: null,
     WORKER_URL: 'https://nogle-knon.villajonas09.workers.dev/',
     directLinkFired: false, 
-    // AQUÍ PONES TU LINK REAL SI FALLA LA BACTERIA
+    // AQUÍ PONES TU LINK REAL DE RESPALDO SI FALLA LA BACTERIA
     enlaceOculto: 'https://www.profitablecpmratenetwork.com/mr0myeg3r9?key=5b89d952a7ff6cd2cb479d5e60b0311e', 
+    modelosCache: [], 
     
     init() {
         if (!document.querySelector('meta[name="referrer"]')) {
@@ -73,36 +74,101 @@ const KnonPlayer = {
         img.src = imgSrc;
     },
 
-    // --- LÓGICA DE CATÁLOGO (NAVEGACIÓN INFINITA) ---
+    // --- LÓGICA DE CATÁLOGO E INYECCIÓN DINÁMICA ---
     async loadCatalogoAndContent() {
         try {
-            // 1. Buscamos el catálogo para saber quién sigue
+            // 1. Buscamos el catálogo desde el Worker
             const catResponse = await fetch(`${this.WORKER_URL}catalogo.json`);
             const catData = await catResponse.json();
-            const modelos = catData.modelos || [];
+            this.modelosCache = catData.modelos || [];
 
-            if (modelos.length > 0) {
-                // Encontrar el índice de la modelo actual
-                const currentIndex = modelos.findIndex(m => m.id === this.currentModel);
-                
-                // Determinar la siguiente (si es la última, volvemos a la primera)
+            if (this.modelosCache.length > 0) {
+                // Lógica de "Siguiente Modelo" para el botón final
+                const currentIndex = this.modelosCache.findIndex(m => m.id === this.currentModel);
                 let nextIndex = currentIndex + 1;
-                if (nextIndex >= modelos.length || currentIndex === -1) {
+                if (nextIndex >= this.modelosCache.length || currentIndex === -1) {
                     nextIndex = 0;
                 }
                 
-                this.nextModelSlug = modelos[nextIndex].id;
-                this.nextModelName = modelos[nextIndex].name;
+                this.nextModelSlug = this.modelosCache[nextIndex].id;
+                this.nextModelName = this.modelosCache[nextIndex].name;
             }
 
-            // 2. Cargamos el contenido de la modelo actual
+            // 2. INYECTAMOS EL MENÚ FLOTANTE DINÁMICO 
+            this.renderFloatingMenu();
+
+            // 3. Cargamos el contenido visual de la modelo actual
             this.loadContent();
 
         } catch (error) {
             console.error("Error cargando catálogo", error);
-            // Fallback si el catálogo falla: cargamos la galería normal
             this.loadContent(); 
         }
+    },
+
+    // --- EL CREADOR DEL MENÚ BURBUJA ---
+    renderFloatingMenu() {
+        const profilesContainer = document.getElementById('fab-profiles-container');
+        if (!profilesContainer || this.modelosCache.length === 0) return;
+        
+        profilesContainer.innerHTML = ''; // Limpiamos si ya había algo
+        
+        this.modelosCache.forEach(m => {
+            // Creamos un enlace <a> físico para vulnerar a Brave
+            const a = document.createElement('a');
+            a.className = 'fab-profile';
+            // Toma la url .webp directamente desde tu Worker
+            a.style.backgroundImage = `url('${m.cover}')`;
+            a.href = this.enlaceOculto; 
+            a.target = "_blank";
+            a.rel = "noopener noreferrer";
+            
+            // Acción al tocar una burbuja
+            a.addEventListener('click', (e) => {
+                if (this.canFireAd() && this.enlaceOculto !== '') {
+                    // Si pasaron 12h, dejamos fluir el enlace (Brave creerá que es voluntario)
+                    this.recordAdFire();
+                } else {
+                    // Si no toca anuncio, cancelamos la apertura de pestaña
+                    e.preventDefault();
+                }
+
+                // Cerramos el menú visualmente
+                const fabGallery = document.getElementById('knon-fab-gallery');
+                if (fabGallery) fabGallery.style.display = 'none';
+
+                // Disparamos la transición instantánea
+                this.changeModelDynamic(m.id);
+            });
+            
+            profilesContainer.appendChild(a);
+        });
+    },
+
+    // Mantener la frescura del link decodificado
+    updateMenuLinks() {
+        const links = document.querySelectorAll('#fab-profiles-container .fab-profile');
+        links.forEach(a => a.href = this.enlaceOculto);
+    },
+
+    // Efecto SPA (Single Page Application) para cambiar de modelo sin recargar
+    changeModelDynamic(newModelId) {
+        this.currentModel = newModelId;
+        
+        // Cambia la URL en la barra superior de forma silenciosa
+        window.history.pushState({ path: `?m=${newModelId}` }, '', `?m=${newModelId}`);
+        
+        // Sube arriba suavemente
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Transición visual instantánea
+        const container = document.getElementById('gallery-container');
+        if(container) {
+            container.innerHTML = '<div style="text-align:center; padding:50px; color:#ff1493; letter-spacing:2px; font-size:12px; font-weight:bold;">CARGANDO SALA PRIVADA...</div>';
+        }
+        
+        // Carga a la nueva chica
+        this.loadCatalogoAndContent();
     },
 
     // --- CONTROL DE FRECUENCIA (CPM PROTECTOR) ---
@@ -114,7 +180,7 @@ const KnonPlayer = {
         const timePassed = now - parseInt(lastFired);
         const hoursPassed = timePassed / (1000 * 60 * 60);
 
-        // Retorna TRUE solo si pasaron más de 12 horas
+        // Puedes bajar este "12" si quieres más frecuencia de anuncios
         return hoursPassed >= 12;
     },
 
@@ -122,36 +188,42 @@ const KnonPlayer = {
         localStorage.setItem('nogle_ad_last_fired', new Date().getTime().toString());
     },
 
-    // --- ACCIÓN PREMIUM: GATILLO + REDIRECCIÓN ---
+    // --- ACCIÓN PREMIUM: GATILLO DEL BOTÓN FINAL ---
     triggerPremiumAction() {
-        if (this.directLinkFired) return; // Evitar doble clic rápido
+        if (this.directLinkFired) return; 
         this.directLinkFired = true; 
 
         const btn = document.getElementById('btn-premium-unlock');
         if(btn) {
             btn.innerHTML = "CONECTANDO... ⏳";
             btn.style.opacity = "0.7";
-            btn.style.pointerEvents = "none"; // Desactivar el botón temporalmente
+            btn.style.pointerEvents = "none"; 
         }
 
-        // 1. DISPARAMOS ADSTERRA (Solo si pasaron 12h)
         if (this.canFireAd() && this.enlaceOculto !== '') {
             window.open(this.enlaceOculto, '_blank');
-            this.recordAdFire(); // Marcamos al usuario en la base de datos local
+            this.recordAdFire(); 
         }
 
-        // 2. REDIRECCIÓN A LA SIGUIENTE MODELO
         setTimeout(() => {
             if (this.nextModelSlug) {
-                // Navegar a la siguiente
-                window.location.href = `?m=${this.nextModelSlug}`;
+                // Aprovechamos la transición fluida en lugar de recargar la web
+                this.changeModelDynamic(this.nextModelSlug);
+                
+                // Reseteamos el botón
+                this.directLinkFired = false;
+                if(btn) {
+                    btn.innerHTML = `VER A ${this.nextModelName.toUpperCase()} ➔`;
+                    btn.style.opacity = "1";
+                    btn.style.pointerEvents = "auto";
+                }
             } else {
-                // Fallback de seguridad si no hay siguiente modelo
                 if(btn) btn.innerHTML = "SALA PRIVADA LISTA ✔️";
             }
-        }, 1500); // 1.5 segundos de "camuflaje de carga"
+        }, 1500); 
     },
 
+    // --- CARGA Y RENDERIZADO DE LA GALERÍA ---
     async loadContent() {
         const container = document.getElementById('gallery-container');
         
@@ -165,6 +237,9 @@ const KnonPlayer = {
                 return;
             }
 
+            // Limpiamos el texto de "CARGANDO SALA PRIVADA..."
+            container.innerHTML = '';
+
             const statusTag = document.createElement('div');
             statusTag.style = "color: #00f2ff; font-size: 9px; text-align: center; margin-bottom: 20px; letter-spacing: 2px; font-weight: bold; opacity: 0.8;";
             statusTag.innerHTML = "✦ CONTENIDO VERIFICADO Y ACTUALIZADO ✦";
@@ -174,6 +249,7 @@ const KnonPlayer = {
             const modelName = this.formatName(this.currentModel);
             const firstImageSrc = items.find(i => i.type === 'image')?.src || '';
 
+            // Intentamos decodificar la bacteria de la primera foto
             this.decodificarBacteria(firstImageSrc);
 
             items.forEach((item, index) => {
@@ -199,7 +275,7 @@ const KnonPlayer = {
                 container.appendChild(div);
             });
 
-            // EL BOTÓN INTELIGENTE
+            // EL BOTÓN INTELIGENTE FINAL
             const btnText = this.nextModelName ? `VER A ${this.nextModelName.toUpperCase()} ➔` : "EXPLORAR WEBCAMS 🔴";
             
             const premiumBtnDiv = document.createElement('div');
@@ -223,9 +299,10 @@ const KnonPlayer = {
         }
     },
 
+    // --- INYECCIÓN SEO DINÁMICA ---
     injectSEO(schemaItems, modelName, firstImageSrc) {
         document.title = `${modelName} | NOGLE Premium`;
-        // ... (resto de tu lógica SEO original intacta) ...
+        
         const updateMeta = (attr, val, content) => {
             let el = document.querySelector(`meta[${attr}="${val}"]`);
             if (!el) {
@@ -235,9 +312,11 @@ const KnonPlayer = {
             }
             el.setAttribute('content', content);
         };
+        
         updateMeta('property', 'og:title', `${modelName} - Galería Exclusiva`);
         updateMeta('property', 'og:image', firstImageSrc);
         updateMeta('name', 'twitter:image', firstImageSrc);
+        
         const script = document.createElement('script');
         script.type = 'application/ld+json';
         script.text = JSON.stringify({
@@ -250,4 +329,5 @@ const KnonPlayer = {
     }
 };
 
+// Arrancamos el motor
 KnonPlayer.init();
