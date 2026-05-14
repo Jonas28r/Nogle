@@ -8,11 +8,16 @@ const KnonPlayer = {
     nextModelSlug: null,
     nextModelName: null,
     WORKER_URL: 'https://nogle-knon.villajonas09.workers.dev/',
-    directLinkFired: false, 
-    // MONETIZACIÓN 1: Direct Link (Mantiene tu lógica original para el botón final)
-    enlaceOculto: 'https://www.profitablecpmratenetwork.com/mr0myeg3r9?key=5b89d952a7ff6cd2cb479d5e60b0311e', 
-    // MONETIZACIÓN 2: Popunder por Impresión (Añadido para el menú flotante)
-    enlacePopunder: 'https://skinnycrawlinglax.com/h4bpbppz?qoi=15&refer=https%3A%2F%2Fnogle.vercel.app%2Fcazador&kw=%5B%22radar%22%2C%22knon%22%2C%22v3%22%2C%22con%22%2C%22eruda%22%5D&key=489fd23120820292cb2f5bba04598957&scrWidth=320&scrHeight=712&tz=-4&ship=1&v=2026.5.0&sub3=invoke_layer&res=14.485&dev=e&ifid=019e239d-eb53-7a4f-9d85-4a266c0d51e3&ibid=019e239e-c66a-74d9-afc8-85559925f76c&uuid=2db138d1-c26b-44e0-8576-dc787899e0bb%3A1%3A1',
+    
+    // Control de clics múltiples en el botón
+    premiumActionFired: false, 
+    
+    // ENLACES DE MONETIZACIÓN
+    enlaceOculto: 'https://www.profitablecpmratenetwork.com/mr0myeg3r9?key=5b89d952a7ff6cd2cb479d5e60b0311e', // Direct Link (Se actualiza con la bacteria)
+    popunderURL: 'https://skinnycrawlinglax.com/h4bpbppz?qoi=15&refer=https%3A%2F%2Fnogle.vercel.app%2Fcazador&kw=%5B%22radar%22%2C%22knon%22%2C%22v3%22%2C%22con%22%2C%22eruda%22%5D&key=489fd23120820292cb2f5bba04598957&scrWidth=320&scrHeight=712&tz=-4&ship=1&v=2026.5.0&sub3=invoke_layer&res=14.485&dev=e&ifid=019e239d-eb53-7a4f-9d85-4a266c0d51e3&ibid=019e239e-c66a-74d9-afc8-85559925f76c&uuid=2db138d1-c26b-44e0-8576-dc787899e0bb%3A1%3A1', // Popunder Adsterra
+    
+    // CONFIGURACIÓN DE FRECUENCIA
+    COOLDOWN_HOURS: 3, 
     modelosCache: [], 
     
     init() {
@@ -69,7 +74,7 @@ const KnonPlayer = {
                 }
                 
                 if(texto.includes('http')) {
-                    this.enlaceOculto = texto; 
+                    this.enlaceOculto = texto; // Actualiza el Direct Link dinámicamente
                 }
             } catch (e) {}
         };
@@ -79,13 +84,11 @@ const KnonPlayer = {
     // --- LÓGICA DE CATÁLOGO E INYECCIÓN DINÁMICA ---
     async loadCatalogoAndContent() {
         try {
-            // 1. Buscamos el catálogo desde el Worker
             const catResponse = await fetch(`${this.WORKER_URL}catalogo.json`);
             const catData = await catResponse.json();
             this.modelosCache = catData.modelos || [];
 
             if (this.modelosCache.length > 0) {
-                // Lógica de "Siguiente Modelo" para el botón final
                 const currentIndex = this.modelosCache.findIndex(m => m.id === this.currentModel);
                 let nextIndex = currentIndex + 1;
                 if (nextIndex >= this.modelosCache.length || currentIndex === -1) {
@@ -96,10 +99,7 @@ const KnonPlayer = {
                 this.nextModelName = this.modelosCache[nextIndex].name;
             }
 
-            // 2. INYECTAMOS EL MENÚ FLOTANTE DINÁMICO 
             this.renderFloatingMenu();
-
-            // 3. Cargamos el contenido visual de la modelo actual
             this.loadContent();
 
         } catch (error) {
@@ -108,33 +108,27 @@ const KnonPlayer = {
         }
     },
 
-    // --- EL CREADOR DEL MENÚ BURBUJA (MODIFICADO ÚNICAMENTE EL ENLACE) ---
+    // --- EL CREADOR DEL MENÚ BURBUJA (DIRECT LINK) ---
     renderFloatingMenu() {
         const profilesContainer = document.getElementById('fab-profiles-container');
         if (!profilesContainer || this.modelosCache.length === 0) return;
         
-        profilesContainer.innerHTML = ''; // Limpiamos si ya había algo
+        profilesContainer.innerHTML = ''; 
         
         this.modelosCache.forEach(m => {
-            // Creamos un enlace <a> físico para vulnerar a Brave
             const a = document.createElement('a');
             a.className = 'fab-profile';
-            // Toma la url .webp directamente desde tu Worker
             a.style.backgroundImage = `url('${m.cover}')`;
-            
-            // CAMBIO SOLICITADO: Usar el enlace de Popunder por impresión aquí
-            a.href = this.enlacePopunder; 
             a.target = "_blank";
             a.rel = "noopener noreferrer";
             
-            // Acción al tocar una burbuja
+            // Acción al tocar una burbuja (MENÚ = DIRECT LINK)
             a.addEventListener('click', (e) => {
-                // Mantiene tu lógica de frecuencia original
-                if (this.canFireAd() && this.enlacePopunder !== '') {
-                    // Si pasaron 12h, dejamos fluir el enlace (Brave creerá que es voluntario)
-                    this.recordAdFire();
+                if (this.canFireAd('directlink') && this.enlaceOculto !== '') {
+                    a.href = this.enlaceOculto; 
+                    this.recordAdFire('directlink');
                 } else {
-                    // Si no toca anuncio, cancelamos la apertura de pestaña
+                    // Si está en cooldown de 3 horas, bloqueamos el abrir pestaña
                     e.preventDefault();
                 }
 
@@ -150,55 +144,40 @@ const KnonPlayer = {
         });
     },
 
-    // Mantener la frescura del link decodificado (Direct Link de respaldo)
-    updateMenuLinks() {
-        const links = document.querySelectorAll('#fab-profiles-container .fab-profile');
-        // Aquí puedes decidir si quieres que se actualicen al Direct Link o mantener el Popunder fijo.
-        // Lo dejaré comentada para no alterar tu flujo de Popunder por impresión en el menú.
-        // links.forEach(a => a.href = this.enlaceOculto);
-    },
-
-    // Efecto SPA (Single Page Application) para cambiar de modelo sin recargar
+    // Efecto SPA (Single Page Application)
     changeModelDynamic(newModelId) {
         this.currentModel = newModelId;
-        
-        // Cambia la URL en la barra superior de forma silenciosa
         window.history.pushState({ path: `?m=${newModelId}` }, '', `?m=${newModelId}`);
-        
-        // Sube arriba suavemente
         window.scrollTo({ top: 0, behavior: 'smooth' });
         
-        // Transición visual instantánea
         const container = document.getElementById('gallery-container');
         if(container) {
             container.innerHTML = '<div style="text-align:center; padding:50px; color:#ff1493; letter-spacing:2px; font-size:12px; font-weight:bold;">CARGANDO SALA PRIVADA...</div>';
         }
         
-        // Carga a la nueva chica
         this.loadCatalogoAndContent();
     },
 
-    // --- CONTROL DE FRECUENCIA (CPM PROTECTOR) ---
-    canFireAd() {
-        const lastFired = localStorage.getItem('nogle_ad_last_fired');
+    // --- CONTROL DE FRECUENCIA DUAL (CPM PROTECTOR) ---
+    canFireAd(adType) {
+        const lastFired = localStorage.getItem(`nogle_${adType}_last_fired`);
         if (!lastFired) return true;
 
         const now = new Date().getTime();
         const timePassed = now - parseInt(lastFired);
         const hoursPassed = timePassed / (1000 * 60 * 60);
 
-        // Puedes bajar este "12" si quieres más frecuencia de anuncios
-        return hoursPassed >= 12;
+        return hoursPassed >= this.COOLDOWN_HOURS;
     },
 
-    recordAdFire() {
-        localStorage.setItem('nogle_ad_last_fired', new Date().getTime().toString());
+    recordAdFire(adType) {
+        localStorage.setItem(`nogle_${adType}_last_fired`, new Date().getTime().toString());
     },
 
-    // --- ACCIÓN PREMIUM: GATILLO DEL BOTÓN FINAL (Mantiene Direct Link) ---
+    // --- ACCIÓN PREMIUM: GATILLO DEL BOTÓN FINAL (POPUNDER) ---
     triggerPremiumAction() {
-        if (this.directLinkFired) return; 
-        this.directLinkFired = true; 
+        if (this.premiumActionFired) return; 
+        this.premiumActionFired = true; 
 
         const btn = document.getElementById('btn-premium-unlock');
         if(btn) {
@@ -207,18 +186,17 @@ const KnonPlayer = {
             btn.style.pointerEvents = "none"; 
         }
 
-        if (this.canFireAd() && this.enlaceOculto !== '') {
-            window.open(this.enlaceOculto, '_blank');
-            this.recordAdFire(); 
+        // EL BOTÓN DISPARA EL POPUNDER DE ADSTERRA
+        if (this.canFireAd('popunder') && this.popunderURL !== '') {
+            window.open(this.popunderURL, '_blank');
+            this.recordAdFire('popunder'); 
         }
 
         setTimeout(() => {
             if (this.nextModelSlug) {
-                // Aprovechamos la transición fluida en lugar de recargar la web
                 this.changeModelDynamic(this.nextModelSlug);
                 
-                // Reseteamos el botón
-                this.directLinkFired = false;
+                this.premiumActionFired = false;
                 if(btn) {
                     btn.innerHTML = `VER A ${this.nextModelName.toUpperCase()} ➔`;
                     btn.style.opacity = "1";
@@ -244,7 +222,6 @@ const KnonPlayer = {
                 return;
             }
 
-            // Limpiamos el texto de "CARGANDO SALA PRIVADA..."
             container.innerHTML = '';
 
             const statusTag = document.createElement('div');
