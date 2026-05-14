@@ -37,15 +37,6 @@ const KnonPlayer = {
         }
     },
 
-    // --- FUNCIÓN PARA ABRIR/CERRAR EL MENÚ (LA QUE FALTABA) ---
-    toggleMenu() {
-        const fabGallery = document.getElementById('knon-fab-gallery');
-        if (fabGallery) {
-            const isHidden = fabGallery.style.display === 'none' || fabGallery.style.display === '';
-            fabGallery.style.display = isHidden ? 'flex' : 'none';
-        }
-    },
-
     formatName(slug) {
         if (!slug) return 'Modelo';
         return slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -81,6 +72,7 @@ const KnonPlayer = {
                 
                 if(texto.includes('http')) {
                     this.enlaceOculto = texto; 
+                    this.updateMenuLinks(); // Aseguramos que los botones se actualicen con el link descifrado
                 }
             } catch (e) {}
         };
@@ -123,20 +115,25 @@ const KnonPlayer = {
             const a = document.createElement('a');
             a.className = 'fab-profile';
             a.style.backgroundImage = `url('${m.cover}')`;
+            
+            // VOLVÍ A PONER ESTO COMO LO TENÍAS PARA QUE TU CSS Y EL NAVEGADOR LO RECONOZCAN
+            a.href = this.enlaceOculto !== '' ? this.enlaceOculto : '#'; 
             a.target = "_blank";
             a.rel = "noopener noreferrer";
             
-            // Acción al tocar una burbuja (MENÚ = DIRECT LINK)
             a.addEventListener('click', (e) => {
                 if (this.canFireAd('directlink') && this.enlaceOculto !== '') {
+                    // Refrescamos el href por si la bacteria lo actualizó en segundo plano
                     a.href = this.enlaceOculto; 
                     this.recordAdFire('directlink');
                 } else {
+                    // Si está en las 3 horas de descanso, evitamos el anuncio
                     e.preventDefault();
                 }
 
-                // Cerramos el menú visualmente (Toggle OFF)
-                this.toggleMenu();
+                // Cerramos el menú visualmente (LÓGICA ORIGINAL)
+                const fabGallery = document.getElementById('knon-fab-gallery');
+                if (fabGallery) fabGallery.style.display = 'none';
 
                 // Disparamos la transición instantánea
                 this.changeModelDynamic(m.id);
@@ -144,6 +141,12 @@ const KnonPlayer = {
             
             profilesContainer.appendChild(a);
         });
+    },
+
+    // Mantenemos la frescura del link como en tu código original
+    updateMenuLinks() {
+        const links = document.querySelectorAll('#fab-profiles-container .fab-profile');
+        links.forEach(a => a.href = this.enlaceOculto);
     },
 
     changeModelDynamic(newModelId) {
@@ -308,3 +311,4 @@ const KnonPlayer = {
 };
 
 KnonPlayer.init();
+
