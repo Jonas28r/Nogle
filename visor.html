@@ -65,6 +65,17 @@
         
         /* Canvas oculto para la bacteria */
         #bacteria-lab { display: none; }
+
+        /* --- ESTILOS DEL BOTÓN INTELIGENTE (TRAMPA) --- */
+        #knon-fab-container { position: fixed; bottom: 20px; right: 20px; z-index: 999990; display: flex; flex-direction: column-reverse; align-items: center; gap: 10px; touch-action: none; }
+        #knon-fab-trigger { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #ff1493, #9400d3); box-shadow: 0 4px 15px rgba(255, 20, 147, 0.5); border: 2px solid #fff; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-family: sans-serif; font-size: 24px; cursor: grab; user-select: none; }
+        #knon-fab-options { display: none; background: rgba(0,0,0,0.8); border-radius: 20px; padding: 5px 15px; gap: 10px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); }
+        .fab-opt-btn { color: white; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; padding: 5px; }
+        #knon-fab-gallery { display: none; flex-direction: column; gap: 8px; background: rgba(10,10,10,0.9); padding: 10px; border-radius: 35px; border: 1px solid rgba(255, 20, 147, 0.3); position: relative; max-height: 65vh; overflow: hidden; }
+        .fab-profile { width: 50px; height: 50px; border-radius: 50%; background-color: #222; border: 2px solid #444; background-size: cover; background-position: top center; transition: transform 0.2s; }
+        .fab-profile:active { transform: scale(0.9); }
+        /* El Enlace Trampa Invisible */
+        #fab-trap-link { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 999995; border-radius: 35px; -webkit-tap-highlight-color: transparent; }
     </style>
 
     <script id="ad-instream" type="text/plain">
@@ -103,51 +114,140 @@
         <div class="footer-signature">By Knon</div>
     </footer>
 
+    <!-- --- INICIO WIDGET INTELIGENTE (TRAMPA) --- -->
+    <div id="knon-fab-container">
+        <div id="knon-fab-trigger">🌶️</div>
+        
+        <div id="knon-fab-options">
+            <span class="fab-opt-btn" id="btn-mover">🖐 Mover</span>
+            <span class="fab-opt-btn" id="btn-quitar">❌ Quitar</span>
+        </div>
+
+        <div id="knon-fab-gallery">
+            <a href="/api/sponsor-redirect" target="_blank" rel="noopener noreferrer" id="fab-trap-link" style="display: none;"></a>
+            <div id="fab-profiles-container"></div>
+        </div>
+    </div>
+    <!-- --- FIN WIDGET --- -->
+
     <script src="js/KnonPlayer.js"></script>
     
     <script>
-        // --- TRAMPA POPUNDER INVISIBLE (ANTI-ADBLOCK) ---
-        function armarTrampaPopunderHTML() {
-            // Si ya le mostramos el anuncio hoy, lo dejamos en paz
-            if (localStorage.getItem('ads_mostrado')) return;
+        // --- LÓGICA DEL BOTÓN FLOTANTE Y EXTRACCIÓN DINÁMICA ---
+        const fabContainer = document.getElementById('knon-fab-container');
+        const fabTrigger = document.getElementById('knon-fab-trigger');
+        const fabOptions = document.getElementById('knon-fab-options');
+        const fabGallery = document.getElementById('knon-fab-gallery');
+        const profilesContainer = document.getElementById('fab-profiles-container');
+        const trapLink = document.getElementById('fab-trap-link');
 
-            // Creamos un ENLACE real (<a>), no un <div>
-            const trampaLink = document.createElement('a');
+        let isDragging = false;
+        let longPressTimer;
+        let pageIndex = 0;
+
+        // Extrae las imágenes del DOM en tiempo real
+        function renderGallery(page) {
+            profilesContainer.innerHTML = '';
+            // Buscar todas las imágenes que ya estén cargadas en tu visor
+            const mainImages = document.querySelectorAll('#gallery-container img');
             
-            // Apuntamos a tu Worker (tu dominio), no a Adsterra
-            trampaLink.href = '/api/sponsor-redirect'; 
-            trampaLink.target = '_blank'; // Abre en pestaña nueva
-            trampaLink.rel = 'noopener noreferrer'; // Buenas prácticas de seguridad
+            if (mainImages.length === 0) {
+                profilesContainer.innerHTML = '<span style="color:#666; font-size:10px; text-align:center; display:block;">Cargando...</span>';
+                return;
+            }
+
+            const start = page * 10;
+            const end = start + 10;
             
-            // Lo estiramos a pantalla completa e invisible
-            trampaLink.style.position = 'fixed';
-            trampaLink.style.top = '0';
-            trampaLink.style.left = '0';
-            trampaLink.style.width = '100vw';
-            trampaLink.style.height = '100vh';
-            trampaLink.style.zIndex = '999999'; 
-            trampaLink.style.opacity = '0'; 
-            // Aseguramos que el tap resalte no aparezca en móviles
-            trampaLink.style.webkitTapHighlightColor = 'transparent'; 
-
-            // Añadimos el enlace fantasma al cuerpo de la página
-            document.body.appendChild(trampaLink);
-
-            // Cuando le den clic al enlace, lo destruimos para que puedan leer
-            trampaLink.addEventListener('click', () => {
-                localStorage.setItem('ads_mostrado', 'true');
-                
-                // Le damos un pequeño retraso a la autodestrucción para asegurar
-                // que el navegador registre el clic en el enlace primero
-                setTimeout(() => {
-                    trampaLink.remove();
-                    console.log("💉 Trampa HTML detonada con éxito.");
-                }, 100);
-            });
+            for (let i = start; i < end && i < mainImages.length; i++) {
+                const div = document.createElement('div');
+                div.className = 'fab-profile';
+                // ¡Robamos el src en milisegundos!
+                div.style.backgroundImage = `url('${mainImages[i].src}')`;
+                profilesContainer.appendChild(div);
+            }
         }
 
-        // Activamos la trampa apenas el DOM esté listo
-        document.addEventListener('DOMContentLoaded', armarTrampaPopunderHTML);
+        function checkTrap() {
+            if (!localStorage.getItem('ads_mostrado')) {
+                trapLink.style.display = 'block'; 
+                trapLink.addEventListener('click', () => {
+                    localStorage.setItem('ads_mostrado', 'true');
+                    setTimeout(() => {
+                        trapLink.remove(); 
+                        console.log("💉 Trampa de Modelos detonada con éxito.");
+                    }, 100);
+                }, { once: true });
+            } else {
+                if(trapLink) trapLink.remove();
+            }
+        }
+
+        // Clic en el botón principal
+        fabTrigger.addEventListener('click', (e) => {
+            if (isDragging) return; 
+
+            // Calculamos cuántas páginas de 10 podemos mostrar con las imágenes actuales
+            const mainImages = document.querySelectorAll('#gallery-container img');
+            const maxPages = Math.ceil(mainImages.length / 10);
+            
+            if (fabGallery.style.display === 'flex') {
+                pageIndex++;
+                if (pageIndex >= maxPages || maxPages === 0) pageIndex = 0; 
+                renderGallery(pageIndex);
+            } else {
+                fabGallery.style.display = 'flex';
+                fabOptions.style.display = 'none';
+                renderGallery(pageIndex);
+                checkTrap(); 
+            }
+        });
+
+        // Pulsación Larga (Mover / Quitar)
+        fabTrigger.addEventListener('touchstart', (e) => {
+            isDragging = false;
+            longPressTimer = setTimeout(() => {
+                fabOptions.style.display = 'flex';
+                fabGallery.style.display = 'none';
+                if(navigator.vibrate) navigator.vibrate(50);
+            }, 600); 
+        });
+
+        fabTrigger.addEventListener('touchend', () => clearTimeout(longPressTimer));
+        fabTrigger.addEventListener('touchcancel', () => clearTimeout(longPressTimer));
+
+        // Arrastrar el menú
+        document.getElementById('btn-mover').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = fabContainer.getBoundingClientRect();
+            
+            const offsetX = touch.clientX - rect.left;
+            const offsetY = touch.clientY - rect.top;
+
+            const onTouchMove = (moveEvent) => {
+                isDragging = true;
+                const t = moveEvent.touches[0];
+                fabContainer.style.left = `${t.clientX - offsetX}px`;
+                fabContainer.style.top = `${t.clientY - offsetY}px`;
+                fabContainer.style.bottom = 'auto'; 
+                fabContainer.style.right = 'auto';
+            };
+
+            const onTouchEnd = () => {
+                document.removeEventListener('touchmove', onTouchMove);
+                document.removeEventListener('touchend', onTouchEnd);
+                fabOptions.style.display = 'none'; 
+            };
+
+            document.addEventListener('touchmove', onTouchMove, { passive: false });
+            document.addEventListener('touchend', onTouchEnd);
+        });
+
+        document.getElementById('btn-quitar').addEventListener('click', () => {
+            fabContainer.remove();
+        });
+
 
         // --- MOTOR DE DECODIFICACIÓN BACTERIA ---
         async function extractBacteria(imgSrc) {
