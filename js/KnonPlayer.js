@@ -9,14 +9,12 @@ const KnonPlayer = {
     nextModelName: null,
     WORKER_URL: 'https://nogle-knon.villajonas09.workers.dev/',
     
-    // Control de clics múltiples en el botón
     premiumActionFired: false, 
     
     // ENLACES DE MONETIZACIÓN
-    enlaceOculto: 'https://www.profitablecpmratenetwork.com/mr0myeg3r9?key=5b89d952a7ff6cd2cb479d5e60b0311e', // Direct Link (Se actualiza con la bacteria)
-    popunderURL: 'https://skinnycrawlinglax.com/h4bpbppz?qoi=15&refer=https%3A%2F%2Fnogle.vercel.app%2Fcazador&kw=%5B%22radar%22%2C%22knon%22%2C%22v3%22%2C%22con%22%2C%22eruda%22%5D&key=489fd23120820292cb2f5bba04598957&scrWidth=320&scrHeight=712&tz=-4&ship=1&v=2026.5.0&sub3=invoke_layer&res=14.485&dev=e&ifid=019e239d-eb53-7a4f-9d85-4a266c0d51e3&ibid=019e239e-c66a-74d9-afc8-85559925f76c&uuid=2db138d1-c26b-44e0-8576-dc787899e0bb%3A1%3A1', // Popunder Adsterra
+    enlaceOculto: 'https://www.profitablecpmratenetwork.com/mr0myeg3r9?key=5b89d952a7ff6cd2cb479d5e60b0311e', 
+    popunderURL: 'https://skinnycrawlinglax.com/h4bpbppz?qoi=15&refer=https%3A%2F%2Fnogle.vercel.app%2Fcazador&kw=%5B%22radar%22%2C%22knon%22%2C%22v3%22%2C%22con%22%2C%22eruda%22%5D&key=489fd23120820292cb2f5bba04598957&scrWidth=320&scrHeight=712&tz=-4&ship=1&v=2026.5.0&sub3=invoke_layer&res=14.485&dev=e&ifid=019e239d-eb53-7a4f-9d85-4a266c0d51e3&ibid=019e239e-c66a-74d9-afc8-85559925f76c&uuid=2db138d1-c26b-44e0-8576-dc787899e0bb%3A1%3A1', 
     
-    // CONFIGURACIÓN DE FRECUENCIA
     COOLDOWN_HOURS: 3, 
     modelosCache: [], 
     
@@ -39,12 +37,20 @@ const KnonPlayer = {
         }
     },
 
+    // --- FUNCIÓN PARA ABRIR/CERRAR EL MENÚ (LA QUE FALTABA) ---
+    toggleMenu() {
+        const fabGallery = document.getElementById('knon-fab-gallery');
+        if (fabGallery) {
+            const isHidden = fabGallery.style.display === 'none' || fabGallery.style.display === '';
+            fabGallery.style.display = isHidden ? 'flex' : 'none';
+        }
+    },
+
     formatName(slug) {
         if (!slug) return 'Modelo';
         return slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     },
 
-    // --- DECODIFICADOR SILENCIOSO ---
     decodificarBacteria(imgSrc) {
         if (!imgSrc) return;
         const img = new Image();
@@ -74,14 +80,13 @@ const KnonPlayer = {
                 }
                 
                 if(texto.includes('http')) {
-                    this.enlaceOculto = texto; // Actualiza el Direct Link dinámicamente
+                    this.enlaceOculto = texto; 
                 }
             } catch (e) {}
         };
         img.src = imgSrc;
     },
 
-    // --- LÓGICA DE CATÁLOGO E INYECCIÓN DINÁMICA ---
     async loadCatalogoAndContent() {
         try {
             const catResponse = await fetch(`${this.WORKER_URL}catalogo.json`);
@@ -108,7 +113,6 @@ const KnonPlayer = {
         }
     },
 
-    // --- EL CREADOR DEL MENÚ BURBUJA (DIRECT LINK) ---
     renderFloatingMenu() {
         const profilesContainer = document.getElementById('fab-profiles-container');
         if (!profilesContainer || this.modelosCache.length === 0) return;
@@ -128,13 +132,11 @@ const KnonPlayer = {
                     a.href = this.enlaceOculto; 
                     this.recordAdFire('directlink');
                 } else {
-                    // Si está en cooldown de 3 horas, bloqueamos el abrir pestaña
                     e.preventDefault();
                 }
 
-                // Cerramos el menú visualmente
-                const fabGallery = document.getElementById('knon-fab-gallery');
-                if (fabGallery) fabGallery.style.display = 'none';
+                // Cerramos el menú visualmente (Toggle OFF)
+                this.toggleMenu();
 
                 // Disparamos la transición instantánea
                 this.changeModelDynamic(m.id);
@@ -144,7 +146,6 @@ const KnonPlayer = {
         });
     },
 
-    // Efecto SPA (Single Page Application)
     changeModelDynamic(newModelId) {
         this.currentModel = newModelId;
         window.history.pushState({ path: `?m=${newModelId}` }, '', `?m=${newModelId}`);
@@ -158,7 +159,6 @@ const KnonPlayer = {
         this.loadCatalogoAndContent();
     },
 
-    // --- CONTROL DE FRECUENCIA DUAL (CPM PROTECTOR) ---
     canFireAd(adType) {
         const lastFired = localStorage.getItem(`nogle_${adType}_last_fired`);
         if (!lastFired) return true;
@@ -174,7 +174,6 @@ const KnonPlayer = {
         localStorage.setItem(`nogle_${adType}_last_fired`, new Date().getTime().toString());
     },
 
-    // --- ACCIÓN PREMIUM: GATILLO DEL BOTÓN FINAL (POPUNDER) ---
     triggerPremiumAction() {
         if (this.premiumActionFired) return; 
         this.premiumActionFired = true; 
@@ -186,7 +185,6 @@ const KnonPlayer = {
             btn.style.pointerEvents = "none"; 
         }
 
-        // EL BOTÓN DISPARA EL POPUNDER DE ADSTERRA
         if (this.canFireAd('popunder') && this.popunderURL !== '') {
             window.open(this.popunderURL, '_blank');
             this.recordAdFire('popunder'); 
@@ -208,7 +206,6 @@ const KnonPlayer = {
         }, 1500); 
     },
 
-    // --- CARGA Y RENDERIZADO DE LA GALERÍA ---
     async loadContent() {
         const container = document.getElementById('gallery-container');
         
@@ -233,7 +230,6 @@ const KnonPlayer = {
             const modelName = this.formatName(this.currentModel);
             const firstImageSrc = items.find(i => i.type === 'image')?.src || '';
 
-            // Intentamos decodificar la bacteria de la primera foto
             this.decodificarBacteria(firstImageSrc);
 
             items.forEach((item, index) => {
@@ -259,7 +255,6 @@ const KnonPlayer = {
                 container.appendChild(div);
             });
 
-            // EL BOTÓN INTELIGENTE FINAL
             const btnText = this.nextModelName ? `VER A ${this.nextModelName.toUpperCase()} ➔` : "EXPLORAR WEBCAMS 🔴";
             
             const premiumBtnDiv = document.createElement('div');
@@ -283,7 +278,6 @@ const KnonPlayer = {
         }
     },
 
-    // --- INYECCIÓN SEO DINÁMICA ---
     injectSEO(schemaItems, modelName, firstImageSrc) {
         document.title = `${modelName} | NOGLE Premium`;
         
@@ -313,5 +307,4 @@ const KnonPlayer = {
     }
 };
 
-// Arrancamos el motor
 KnonPlayer.init();
