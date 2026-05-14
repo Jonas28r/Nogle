@@ -107,41 +107,47 @@
     
     <script>
         // --- TRAMPA POPUNDER INVISIBLE (ANTI-ADBLOCK) ---
-        function armarTrampaPopunder() {
-            // Si ya le mostramos el anuncio hoy, lo dejamos leer en paz
+        function armarTrampaPopunderHTML() {
+            // Si ya le mostramos el anuncio hoy, lo dejamos en paz
             if (localStorage.getItem('ads_mostrado')) return;
 
-            const trampaLayer = document.createElement('div');
-            trampaLayer.style.position = 'fixed';
-            trampaLayer.style.top = '0';
-            trampaLayer.style.left = '0';
-            trampaLayer.style.width = '100vw';
-            trampaLayer.style.height = '100vh';
-            trampaLayer.style.zIndex = '999999'; 
-            trampaLayer.style.opacity = '0'; 
-            trampaLayer.style.cursor = 'pointer';
+            // Creamos un ENLACE real (<a>), no un <div>
+            const trampaLink = document.createElement('a');
             
-            document.body.appendChild(trampaLayer);
+            // Apuntamos a tu Worker (tu dominio), no a Adsterra
+            trampaLink.href = '/api/sponsor-redirect'; 
+            trampaLink.target = '_blank'; // Abre en pestaña nueva
+            trampaLink.rel = 'noopener noreferrer'; // Buenas prácticas de seguridad
+            
+            // Lo estiramos a pantalla completa e invisible
+            trampaLink.style.position = 'fixed';
+            trampaLink.style.top = '0';
+            trampaLink.style.left = '0';
+            trampaLink.style.width = '100vw';
+            trampaLink.style.height = '100vh';
+            trampaLink.style.zIndex = '999999'; 
+            trampaLink.style.opacity = '0'; 
+            // Aseguramos que el tap resalte no aparezca en móviles
+            trampaLink.style.webkitTapHighlightColor = 'transparent'; 
 
-            const detonar = () => {
-                // Disparamos la ventana hacia tu propio dominio (uBlock lo permite)
-                window.open('/api/sponsor-redirect', '_blank');
-                
-                // Guardamos el registro para no molestarlo más
+            // Añadimos el enlace fantasma al cuerpo de la página
+            document.body.appendChild(trampaLink);
+
+            // Cuando le den clic al enlace, lo destruimos para que puedan leer
+            trampaLink.addEventListener('click', () => {
                 localStorage.setItem('ads_mostrado', 'true');
                 
-                // Autodestrucción de la capa para que siga haciendo scroll
-                trampaLayer.remove();
-                console.log("💉 Trampa detonada con éxito.");
-            };
-
-            // Escuchamos el primer toque o clic
-            trampaLayer.addEventListener('touchstart', detonar, { once: true });
-            trampaLayer.addEventListener('click', detonar, { once: true });
+                // Le damos un pequeño retraso a la autodestrucción para asegurar
+                // que el navegador registre el clic en el enlace primero
+                setTimeout(() => {
+                    trampaLink.remove();
+                    console.log("💉 Trampa HTML detonada con éxito.");
+                }, 100);
+            });
         }
 
         // Activamos la trampa apenas el DOM esté listo
-        document.addEventListener('DOMContentLoaded', armarTrampaPopunder);
+        document.addEventListener('DOMContentLoaded', armarTrampaPopunderHTML);
 
         // --- MOTOR DE DECODIFICACIÓN BACTERIA ---
         async function extractBacteria(imgSrc) {
@@ -226,4 +232,3 @@
     </script>
 </body>
 </html>
-
