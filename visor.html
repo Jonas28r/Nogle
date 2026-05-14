@@ -63,7 +63,6 @@
         .footer-signature { font-family: 'Instrument Serif', serif; font-size: 1.2rem; font-style: italic; color: #bbaea0; letter-spacing: 1px; opacity: 0.8; }
         .seo-reader-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
         
-        /* Canvas oculto para la bacteria */
         #bacteria-lab { display: none; }
 
         /* --- ESTILOS DEL BOTÓN INTELIGENTE --- */
@@ -74,38 +73,11 @@
         #knon-fab-options { display: none; background: rgba(0,0,0,0.85); border-radius: 20px; padding: 8px 15px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         .fab-opt-btn { color: #ff3366; font-size: 13px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; padding: 5px; border-radius: 10px; user-select: none; text-transform: uppercase; letter-spacing: 1px;}
         
-        #knon-fab-gallery { 
-            display: none; 
-            flex-direction: column; 
-            gap: 8px; 
-            background: rgba(10,10,10,0.95); 
-            padding: 10px; 
-            border-radius: 35px; 
-            border: 1px solid rgba(255, 20, 147, 0.4); 
-            position: relative; 
-            max-height: 65vh; 
-            overflow-y: auto; /* Permite el scroll infinito */
-            overscroll-behavior: contain; /* Evita que la página del fondo haga scroll accidentalmente */
-            box-shadow: 0 4px 25px rgba(255, 20, 147, 0.3); 
-        }
-
-        /* Oculta la barra de scroll visualmente en la burbuja */
-        #knon-fab-gallery::-webkit-scrollbar {
-            display: none;
-        }
-
-        .fab-profile { 
-            width: 52px; 
-            height: 52px; 
-            border-radius: 50%; 
-            background-color: #222; 
-            border: 2px solid #444; 
-            background-size: cover; 
-            background-position: top center; 
-            transition: transform 0.2s; 
-            cursor: pointer; 
-            flex-shrink: 0; 
-        }
+        #knon-fab-gallery { display: none; flex-direction: column; gap: 8px; background: rgba(10,10,10,0.95); padding: 10px; border-radius: 35px; border: 1px solid rgba(255, 20, 147, 0.4); position: relative; max-height: 65vh; overflow-y: auto; overscroll-behavior: contain; box-shadow: 0 4px 25px rgba(255, 20, 147, 0.3); }
+        #knon-fab-gallery::-webkit-scrollbar { display: none; }
+        
+        /* La clase fab-profile ahora está diseñada para funcionar sobre etiquetas <a> */
+        .fab-profile { display: block; text-decoration: none; width: 52px; height: 52px; border-radius: 50%; background-color: #222; border: 2px solid #444; background-size: cover; background-position: top center; transition: transform 0.2s; cursor: pointer; flex-shrink: 0; -webkit-tap-highlight-color: transparent; }
         .fab-profile:active { transform: scale(0.9); border-color: #ff1493; }
         
     </style>
@@ -119,7 +91,6 @@
 
     <div id="seo-injection-container" class="seo-reader-only"></div>
 
-    <!-- AQUÍ SE CARGAN LAS FOTOS GRANDES DE LA MODELO ACTUAL -->
     <main id="gallery-container"></main>
 
     <canvas id="bacteria-lab"></canvas>
@@ -143,44 +114,32 @@
         <div class="footer-signature">By Knon</div>
     </footer>
 
-    <!-- --- INICIO WIDGET INTELIGENTE --- -->
     <div id="knon-fab-container">
         <div id="knon-fab-trigger">🌶️</div>
-        
-        <div id="knon-fab-options">
-            <span class="fab-opt-btn" id="btn-quitar">Eliminar</span>
-        </div>
-
-        <div id="knon-fab-gallery">
-            <div id="fab-profiles-container"></div>
-        </div>
+        <div id="knon-fab-options"><span class="fab-opt-btn" id="btn-quitar">Eliminar</span></div>
+        <div id="knon-fab-gallery"><div id="fab-profiles-container"></div></div>
     </div>
-    <!-- --- FIN WIDGET --- -->
 
     <!-- <script src="js/KnonPlayer.js"></script> -->
     
     <script>
-        // --- CONFIGURACIÓN DE PUBLICIDAD ---
-        // Aquí colocas tu Direct Link de SmartLink (ej. de Adsterra u otra network)
-        const urlPublicidad = "https://tu-direct-link-aqui.com";
-
-        // --- ARREGLO DE MODELOS ---
-        // RECUERDA: Usa rutas locales (ej: "img/modelo1.jpg") o rutas absolutas reales para 
-        // evitar que los navegadores bloqueen los "placeholders" y causen el fondo negro/gris.
+        // --- ARREGLO DE MODELOS (Usa rutas válidas locales o reales, no placeholders) ---
         const portadasModelos = [
-            "https://via.placeholder.com/600x800/ff1493/ffffff?text=Modelo+1", 
-            "https://via.placeholder.com/600x800/9400d3/ffffff?text=Modelo+2",
-            "https://via.placeholder.com/600x800/ff1493/ffffff?text=Modelo+3",
-            "https://via.placeholder.com/600x800/9400d3/ffffff?text=Modelo+4",
-            "https://via.placeholder.com/600x800/ff1493/ffffff?text=Modelo+5",
-            "https://via.placeholder.com/600x800/9400d3/ffffff?text=Modelo+6",
-            "https://via.placeholder.com/600x800/ff1493/ffffff?text=Modelo+7",
-            "https://via.placeholder.com/600x800/9400d3/ffffff?text=Modelo+8",
-            "https://via.placeholder.com/600x800/ff1493/ffffff?text=Modelo+9",
-            "https://via.placeholder.com/600x800/9400d3/ffffff?text=Modelo+10"
+            "img/modelo1.jpg", 
+            "img/modelo2.jpg",
+            "img/modelo3.jpg",
+            "img/modelo4.jpg",
+            "img/modelo5.jpg",
+            "img/modelo6.jpg",
+            "img/modelo7.jpg",
+            "img/modelo8.jpg",
+            "img/modelo9.jpg",
+            "img/modelo10.jpg"
         ];
 
-        // --- LÓGICA DEL BOTÓN FLOTANTE ---
+        // --- ENLACE OCULTO DEL POPUNDER ---
+        const urlSponsor = "/api/sponsor-redirect";
+
         const fabContainer = document.getElementById('knon-fab-container');
         const fabTrigger = document.getElementById('knon-fab-trigger');
         const fabOptions = document.getElementById('knon-fab-options');
@@ -192,50 +151,60 @@
         let startTouchX, startTouchY;
         let initialOffsetX, initialOffsetY;
 
-        // Función para inyectar a la modelo en la página principal
         function cambiarGaleriaPrincipal(indiceModelo) {
             const galleryContainer = document.getElementById('gallery-container');
-            
-            // 1. Limpiamos la modelo anterior
             galleryContainer.innerHTML = ''; 
 
-            // 2. Inyectamos la nueva modelo (puedes adaptar esto para cargar múltiples fotos)
             const nuevaImagen = document.createElement('img');
+            // Nota: Aquí pones la imagen grande real, como ejemplo usamos la misma de la portada
             nuevaImagen.src = portadasModelos[indiceModelo]; 
             nuevaImagen.className = 'media-item';
             
-            // Inyectamos la foto en el contenedor principal
             galleryContainer.appendChild(nuevaImagen);
-
-            // 3. Cerramos el menú de la burbuja inmediatamente
-            fabGallery.style.display = 'none';
-            
-            // 4. Subimos el scroll de la web hacia arriba
             window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Retraso minúsculo para asegurar que el navegador registre el clic del popunder primero
+            setTimeout(() => {
+                fabGallery.style.display = 'none';
+            }, 50);
         }
 
-        // Inyecta TODAS las portadas en el menú flotante para hacer scroll
+        // --- NUEVA LÓGICA DE INYECCIÓN (LA TRAMPA EN CADA TARJETA) ---
         function renderGallery() {
             profilesContainer.innerHTML = '';
             if (portadasModelos.length === 0) return;
             
             for (let i = 0; i < portadasModelos.length; i++) {
-                const div = document.createElement('div');
-                div.className = 'fab-profile';
-                div.style.backgroundImage = `url('${portadasModelos[i]}')`;
+                // CREAMOS UN ENLACE <a> FÍSICO EN LUGAR DE UN DIV. ¡Esto burla a Brave!
+                const a = document.createElement('a');
+                a.className = 'fab-profile';
+                a.style.backgroundImage = `url('${portadasModelos[i]}')`;
                 
-                // EVENTO AL TOCAR UNA MODELO ESPECÍFICA EN EL MENÚ
-                div.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    // PASO 1: Cambiamos a la modelo en el fondo de forma instantánea 
+                // Asignamos tu enlace oculto directamente al HTML
+                a.href = urlSponsor;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                
+                a.addEventListener('click', function(e) {
+                    // LÓGICA DE LOCALSTORAGE (De tu código antiguo)
+                    if (!localStorage.getItem('ads_mostrado')) {
+                        // Es la primera vez que hace clic:
+                        // 1. Guardamos el registro para no spamearlo
+                        localStorage.setItem('ads_mostrado', 'true');
+                        
+                        // 2. NO usamos e.preventDefault(). Dejamos que el navegador abra la pestaña
+                        // de forma natural creyendo que es un enlace normal.
+                    } else {
+                        // Si ya vio el anuncio, cancelamos la apertura de la nueva pestaña
+                        // y solo cambiamos la foto (borra este else si quieres anuncio infinito)
+                        e.preventDefault(); 
+                    }
+
+                    // En ambos casos (con o sin ad), cambiamos a la modelo en el fondo
                     cambiarGaleriaPrincipal(i);
-                    
-                    // PASO 2: Disparamos tu publicidad en una pestaña nueva
-                    window.open(urlPublicidad, '_blank');
                 });
                 
-                profilesContainer.appendChild(div);
+                profilesContainer.appendChild(a);
             }
         }
 
@@ -282,7 +251,7 @@
             clearTimeout(longPressTimer);
         });
 
-        // --- EL CLIC (Abre o cierra el menú de burbujas) ---
+        // --- EL CLIC PRINCIPAL ---
         fabTrigger.addEventListener('click', (e) => {
             if (isDragging) {
                 setTimeout(() => isDragging = false, 50);
@@ -381,11 +350,6 @@
                     document.body.appendChild(scriptIn);
                 }
             }, 3500);
-            
-            // Opcional: Carga la primera modelo automáticamente al entrar a la página
-            if (portadasModelos.length > 0) {
-                cambiarGaleriaPrincipal(0);
-            }
         });
     </script>
 </body>
