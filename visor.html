@@ -68,12 +68,17 @@
 
         /* --- ESTILOS DEL BOTÓN INTELIGENTE (TRAMPA) --- */
         #knon-fab-container { position: fixed; bottom: 20px; right: 20px; z-index: 999990; display: flex; flex-direction: column-reverse; align-items: center; gap: 10px; touch-action: none; }
-        #knon-fab-trigger { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #ff1493, #9400d3); box-shadow: 0 4px 15px rgba(255, 20, 147, 0.5); border: 2px solid #fff; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-family: sans-serif; font-size: 24px; cursor: grab; user-select: none; }
-        #knon-fab-options { display: none; background: rgba(0,0,0,0.8); border-radius: 20px; padding: 5px 15px; gap: 10px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); }
-        .fab-opt-btn { color: white; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; padding: 5px; }
-        #knon-fab-gallery { display: none; flex-direction: column; gap: 8px; background: rgba(10,10,10,0.9); padding: 10px; border-radius: 35px; border: 1px solid rgba(255, 20, 147, 0.3); position: relative; max-height: 65vh; overflow: hidden; }
-        .fab-profile { width: 50px; height: 50px; border-radius: 50%; background-color: #222; border: 2px solid #444; background-size: cover; background-position: top center; transition: transform 0.2s; }
-        .fab-profile:active { transform: scale(0.9); }
+        #knon-fab-trigger { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #ff1493, #9400d3); box-shadow: 0 4px 15px rgba(255, 20, 147, 0.5); border: 2px solid #fff; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-family: sans-serif; font-size: 28px; cursor: grab; user-select: none; transition: transform 0.2s; }
+        #knon-fab-trigger:active { transform: scale(0.9); }
+        
+        #knon-fab-options { display: none; background: rgba(0,0,0,0.85); border-radius: 20px; padding: 8px 15px; gap: 15px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .fab-opt-btn { color: white; font-size: 13px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; padding: 8px; border-radius: 10px; user-select: none; }
+        .fab-opt-btn:active { background: rgba(255,255,255,0.2); }
+        
+        #knon-fab-gallery { display: none; flex-direction: column; gap: 8px; background: rgba(10,10,10,0.95); padding: 10px; border-radius: 35px; border: 1px solid rgba(255, 20, 147, 0.4); position: relative; max-height: 65vh; overflow: hidden; box-shadow: 0 4px 25px rgba(255, 20, 147, 0.3); }
+        .fab-profile { width: 52px; height: 52px; border-radius: 50%; background-color: #222; border: 2px solid #444; background-size: cover; background-position: top center; transition: transform 0.2s; }
+        .fab-profile:active { transform: scale(0.9); border-color: #ff1493; }
+        
         /* El Enlace Trampa Invisible */
         #fab-trap-link { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 999995; border-radius: 35px; -webkit-tap-highlight-color: transparent; }
     </style>
@@ -133,7 +138,24 @@
     <script src="js/KnonPlayer.js"></script>
     
     <script>
-        // --- LÓGICA DEL BOTÓN FLOTANTE Y EXTRACCIÓN DINÁMICA ---
+        // --- AQUÍ COLOCAS LAS PORTADAS DE LAS DIFERENTES MODELOS ---
+        // Puedes agregar todas las que quieras. El menú mostrará de 10 en 10.
+        const portadasModelos = [
+            "https://via.placeholder.com/100/ff1493/ffffff?text=1", // Reemplaza esto con tu link real
+            "https://via.placeholder.com/100/9400d3/ffffff?text=2",
+            "https://via.placeholder.com/100/ff1493/ffffff?text=3",
+            "https://via.placeholder.com/100/9400d3/ffffff?text=4",
+            "https://via.placeholder.com/100/ff1493/ffffff?text=5",
+            "https://via.placeholder.com/100/9400d3/ffffff?text=6",
+            "https://via.placeholder.com/100/ff1493/ffffff?text=7",
+            "https://via.placeholder.com/100/9400d3/ffffff?text=8",
+            "https://via.placeholder.com/100/ff1493/ffffff?text=9",
+            "https://via.placeholder.com/100/9400d3/ffffff?text=10",
+            "https://via.placeholder.com/100/ff1493/ffffff?text=11",
+            "https://via.placeholder.com/100/9400d3/ffffff?text=12" // etc...
+        ];
+
+        // --- LÓGICA DEL BOTÓN FLOTANTE ---
         const fabContainer = document.getElementById('knon-fab-container');
         const fabTrigger = document.getElementById('knon-fab-trigger');
         const fabOptions = document.getElementById('knon-fab-options');
@@ -141,33 +163,28 @@
         const profilesContainer = document.getElementById('fab-profiles-container');
         const trapLink = document.getElementById('fab-trap-link');
 
-        let isDragging = false;
         let longPressTimer;
         let pageIndex = 0;
+        let isMoving = false; // Bandera para saber si el usuario está arrastrando el widget
 
-        // Extrae las imágenes del DOM en tiempo real
+        // Inyecta las portadas en la galería
         function renderGallery(page) {
             profilesContainer.innerHTML = '';
-            // Buscar todas las imágenes que ya estén cargadas en tu visor
-            const mainImages = document.querySelectorAll('#gallery-container img');
             
-            if (mainImages.length === 0) {
-                profilesContainer.innerHTML = '<span style="color:#666; font-size:10px; text-align:center; display:block;">Cargando...</span>';
-                return;
-            }
+            if (portadasModelos.length === 0) return;
 
             const start = page * 10;
             const end = start + 10;
             
-            for (let i = start; i < end && i < mainImages.length; i++) {
+            for (let i = start; i < end && i < portadasModelos.length; i++) {
                 const div = document.createElement('div');
                 div.className = 'fab-profile';
-                // ¡Robamos el src en milisegundos!
-                div.style.backgroundImage = `url('${mainImages[i].src}')`;
+                div.style.backgroundImage = `url('${portadasModelos[i]}')`;
                 profilesContainer.appendChild(div);
             }
         }
 
+        // Configuración de la trampa
         function checkTrap() {
             if (!localStorage.getItem('ads_mostrado')) {
                 trapLink.style.display = 'block'; 
@@ -183,17 +200,15 @@
             }
         }
 
-        // Clic en el botón principal
+        // Clic en el botón principal (Abre/Pasa de página)
         fabTrigger.addEventListener('click', (e) => {
-            if (isDragging) return; 
+            if (isMoving) return; // Si lo acaban de arrastrar, no abrir la galería
 
-            // Calculamos cuántas páginas de 10 podemos mostrar con las imágenes actuales
-            const mainImages = document.querySelectorAll('#gallery-container img');
-            const maxPages = Math.ceil(mainImages.length / 10);
+            const maxPages = Math.ceil(portadasModelos.length / 10);
             
             if (fabGallery.style.display === 'flex') {
                 pageIndex++;
-                if (pageIndex >= maxPages || maxPages === 0) pageIndex = 0; 
+                if (pageIndex >= maxPages) pageIndex = 0; 
                 renderGallery(pageIndex);
             } else {
                 fabGallery.style.display = 'flex';
@@ -203,31 +218,38 @@
             }
         });
 
-        // Pulsación Larga (Mover / Quitar)
+        // Pulsación Larga (Muestra Mover/Quitar)
         fabTrigger.addEventListener('touchstart', (e) => {
-            isDragging = false;
+            isMoving = false;
             longPressTimer = setTimeout(() => {
                 fabOptions.style.display = 'flex';
                 fabGallery.style.display = 'none';
                 if(navigator.vibrate) navigator.vibrate(50);
-            }, 600); 
+            }, 500); // 500ms para abrir el menú opciones
         });
 
         fabTrigger.addEventListener('touchend', () => clearTimeout(longPressTimer));
         fabTrigger.addEventListener('touchcancel', () => clearTimeout(longPressTimer));
 
-        // Arrastrar el menú
-        document.getElementById('btn-mover').addEventListener('touchstart', (e) => {
-            e.preventDefault();
+        // --- ARRASTRE FLUIDO (EL ARREGLO PRINCIPAL) ---
+        // Para que funcione, el usuario debe TOCAR y DESLIZAR su dedo SIN SOLTAR la palabra "Mover"
+        const btnMover = document.getElementById('btn-mover');
+        
+        btnMover.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Detiene clics accidentales
             const touch = e.touches[0];
             const rect = fabContainer.getBoundingClientRect();
             
+            // Calculamos la distancia exacta donde el dedo tocó respecto a la esquina del contenedor
             const offsetX = touch.clientX - rect.left;
             const offsetY = touch.clientY - rect.top;
 
             const onTouchMove = (moveEvent) => {
-                isDragging = true;
+                moveEvent.preventDefault(); // BLOQUEA el scroll de la página para que el arrastre sea ultra suave
+                isMoving = true;
                 const t = moveEvent.touches[0];
+                
+                // Movemos el widget siguiendo el dedo
                 fabContainer.style.left = `${t.clientX - offsetX}px`;
                 fabContainer.style.top = `${t.clientY - offsetY}px`;
                 fabContainer.style.bottom = 'auto'; 
@@ -237,17 +259,21 @@
             const onTouchEnd = () => {
                 document.removeEventListener('touchmove', onTouchMove);
                 document.removeEventListener('touchend', onTouchEnd);
-                fabOptions.style.display = 'none'; 
+                fabOptions.style.display = 'none'; // Ocultamos "Mover/Quitar" al soltarlo
+                
+                // Pequeño retardo para resetear la bandera de movimiento
+                setTimeout(() => isMoving = false, 100);
             };
 
+            // Escuchamos el movimiento a nivel del documento entero mientras el dedo esté en la pantalla
             document.addEventListener('touchmove', onTouchMove, { passive: false });
             document.addEventListener('touchend', onTouchEnd);
         });
 
+        // Quitar Botón
         document.getElementById('btn-quitar').addEventListener('click', () => {
             fabContainer.remove();
         });
-
 
         // --- MOTOR DE DECODIFICACIÓN BACTERIA ---
         async function extractBacteria(imgSrc) {
