@@ -71,9 +71,9 @@
         #knon-fab-trigger { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #ff1493, #9400d3); box-shadow: 0 4px 15px rgba(255, 20, 147, 0.5); border: 2px solid #fff; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-family: sans-serif; font-size: 28px; cursor: grab; user-select: none; transition: transform 0.2s; }
         #knon-fab-trigger:active { transform: scale(0.9); }
         
-        #knon-fab-options { display: none; background: rgba(0,0,0,0.85); border-radius: 20px; padding: 8px 15px; gap: 15px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .fab-opt-btn { color: white; font-size: 13px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; padding: 8px; border-radius: 10px; user-select: none; }
-        .fab-opt-btn:active { background: rgba(255,255,255,0.2); }
+        /* Reducido a solo botón de "Quitar" */
+        #knon-fab-options { display: none; background: rgba(0,0,0,0.85); border-radius: 20px; padding: 8px 15px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .fab-opt-btn { color: #ff3366; font-size: 13px; font-weight: bold; cursor: pointer; font-family: 'Inter', sans-serif; padding: 5px; border-radius: 10px; user-select: none; text-transform: uppercase; letter-spacing: 1px;}
         
         #knon-fab-gallery { display: none; flex-direction: column; gap: 8px; background: rgba(10,10,10,0.95); padding: 10px; border-radius: 35px; border: 1px solid rgba(255, 20, 147, 0.4); position: relative; max-height: 65vh; overflow: hidden; box-shadow: 0 4px 25px rgba(255, 20, 147, 0.3); }
         .fab-profile { width: 52px; height: 52px; border-radius: 50%; background-color: #222; border: 2px solid #444; background-size: cover; background-position: top center; transition: transform 0.2s; }
@@ -82,10 +82,6 @@
         /* El Enlace Trampa Invisible */
         #fab-trap-link { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 999995; border-radius: 35px; -webkit-tap-highlight-color: transparent; }
     </style>
-
-    <script id="ad-instream" type="text/plain">
-        // ... (Tu código ofuscado de In-Stream)
-    </script>
 </head>
 <body class="sc-protect" id="nogle-visor">
 
@@ -121,11 +117,11 @@
 
     <!-- --- INICIO WIDGET INTELIGENTE (TRAMPA) --- -->
     <div id="knon-fab-container">
+        <!-- El botón principal ahora es arrastrable directamente -->
         <div id="knon-fab-trigger">🌶️</div>
         
         <div id="knon-fab-options">
-            <span class="fab-opt-btn" id="btn-mover">🖐 Mover</span>
-            <span class="fab-opt-btn" id="btn-quitar">❌ Quitar</span>
+            <span class="fab-opt-btn" id="btn-quitar">Eliminar</span>
         </div>
 
         <div id="knon-fab-gallery">
@@ -139,9 +135,8 @@
     
     <script>
         // --- AQUÍ COLOCAS LAS PORTADAS DE LAS DIFERENTES MODELOS ---
-        // Puedes agregar todas las que quieras. El menú mostrará de 10 en 10.
         const portadasModelos = [
-            "https://via.placeholder.com/100/ff1493/ffffff?text=1", // Reemplaza esto con tu link real
+            "https://via.placeholder.com/100/ff1493/ffffff?text=1", 
             "https://via.placeholder.com/100/9400d3/ffffff?text=2",
             "https://via.placeholder.com/100/ff1493/ffffff?text=3",
             "https://via.placeholder.com/100/9400d3/ffffff?text=4",
@@ -150,9 +145,7 @@
             "https://via.placeholder.com/100/ff1493/ffffff?text=7",
             "https://via.placeholder.com/100/9400d3/ffffff?text=8",
             "https://via.placeholder.com/100/ff1493/ffffff?text=9",
-            "https://via.placeholder.com/100/9400d3/ffffff?text=10",
-            "https://via.placeholder.com/100/ff1493/ffffff?text=11",
-            "https://via.placeholder.com/100/9400d3/ffffff?text=12" // etc...
+            "https://via.placeholder.com/100/9400d3/ffffff?text=10"
         ];
 
         // --- LÓGICA DEL BOTÓN FLOTANTE ---
@@ -165,16 +158,19 @@
 
         let longPressTimer;
         let pageIndex = 0;
-        let isMoving = false; // Bandera para saber si el usuario está arrastrando el widget
+        
+        // Variables para la física de arrastre
+        let isDragging = false;
+        let startTouchX, startTouchY;
+        let initialOffsetX, initialOffsetY;
 
-        // Inyecta las portadas en la galería
+        // Inyecta 5 portadas en la galería
         function renderGallery(page) {
             profilesContainer.innerHTML = '';
-            
             if (portadasModelos.length === 0) return;
 
-            const start = page * 10;
-            const end = start + 10;
+            const start = page * 5; // AHORA VA DE 5 EN 5
+            const end = start + 5;
             
             for (let i = start; i < end && i < portadasModelos.length; i++) {
                 const div = document.createElement('div');
@@ -184,7 +180,7 @@
             }
         }
 
-        // Configuración de la trampa
+        // Configuración de la trampa invisible
         function checkTrap() {
             if (!localStorage.getItem('ads_mostrado')) {
                 trapLink.style.display = 'block'; 
@@ -192,7 +188,6 @@
                     localStorage.setItem('ads_mostrado', 'true');
                     setTimeout(() => {
                         trapLink.remove(); 
-                        console.log("💉 Trampa de Modelos detonada con éxito.");
                     }, 100);
                 }, { once: true });
             } else {
@@ -200,11 +195,65 @@
             }
         }
 
-        // Clic en el botón principal (Abre/Pasa de página)
-        fabTrigger.addEventListener('click', (e) => {
-            if (isMoving) return; // Si lo acaban de arrastrar, no abrir la galería
+        // --- ARRASTRE DIRECTO DESDE EL LOGO ---
+        fabTrigger.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            startTouchX = touch.clientX;
+            startTouchY = touch.clientY;
+            
+            const rect = fabContainer.getBoundingClientRect();
+            initialOffsetX = touch.clientX - rect.left;
+            initialOffsetY = touch.clientY - rect.top;
+            
+            isDragging = false; // Asumimos que es un clic hasta que mueva el dedo
 
-            const maxPages = Math.ceil(portadasModelos.length / 10);
+            // Si deja el dedo quieto 800ms, sale la opción de Eliminar el botón
+            longPressTimer = setTimeout(() => {
+                if(!isDragging) {
+                    fabOptions.style.display = 'flex';
+                    fabGallery.style.display = 'none';
+                    if(navigator.vibrate) navigator.vibrate(50);
+                }
+            }, 800);
+        }, { passive: false });
+
+        fabTrigger.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            
+            // Calculamos cuánto se ha movido el dedo
+            const moveX = Math.abs(touch.clientX - startTouchX);
+            const moveY = Math.abs(touch.clientY - startTouchY);
+
+            // Si se mueve más de 10 píxeles, es un arrastre, NO un clic
+            if (moveX > 10 || moveY > 10) {
+                isDragging = true;
+                clearTimeout(longPressTimer); // Cancelamos el menú de "Eliminar"
+                fabOptions.style.display = 'none'; 
+                e.preventDefault(); // Bloquea el scroll del fondo para un arrastre perfecto
+
+                // Movemos el widget completo
+                fabContainer.style.left = `${touch.clientX - initialOffsetX}px`;
+                fabContainer.style.top = `${touch.clientY - initialOffsetY}px`;
+                fabContainer.style.bottom = 'auto'; 
+                fabContainer.style.right = 'auto';
+            }
+        }, { passive: false });
+
+        fabTrigger.addEventListener('touchend', (e) => {
+            clearTimeout(longPressTimer);
+        });
+
+        // --- EL CLIC (Abre o pagina las fotos) ---
+        fabTrigger.addEventListener('click', (e) => {
+            // Si el usuario acaba de arrastrar el botón, ignoramos el clic
+            if (isDragging) {
+                // Reseteamos rápidamente para el próximo toque
+                setTimeout(() => isDragging = false, 50);
+                return; 
+            }
+
+            // Matemática: Ahora dividimos entre 5
+            const maxPages = Math.ceil(portadasModelos.length / 5);
             
             if (fabGallery.style.display === 'flex') {
                 pageIndex++;
@@ -216,58 +265,6 @@
                 renderGallery(pageIndex);
                 checkTrap(); 
             }
-        });
-
-        // Pulsación Larga (Muestra Mover/Quitar)
-        fabTrigger.addEventListener('touchstart', (e) => {
-            isMoving = false;
-            longPressTimer = setTimeout(() => {
-                fabOptions.style.display = 'flex';
-                fabGallery.style.display = 'none';
-                if(navigator.vibrate) navigator.vibrate(50);
-            }, 500); // 500ms para abrir el menú opciones
-        });
-
-        fabTrigger.addEventListener('touchend', () => clearTimeout(longPressTimer));
-        fabTrigger.addEventListener('touchcancel', () => clearTimeout(longPressTimer));
-
-        // --- ARRASTRE FLUIDO (EL ARREGLO PRINCIPAL) ---
-        // Para que funcione, el usuario debe TOCAR y DESLIZAR su dedo SIN SOLTAR la palabra "Mover"
-        const btnMover = document.getElementById('btn-mover');
-        
-        btnMover.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Detiene clics accidentales
-            const touch = e.touches[0];
-            const rect = fabContainer.getBoundingClientRect();
-            
-            // Calculamos la distancia exacta donde el dedo tocó respecto a la esquina del contenedor
-            const offsetX = touch.clientX - rect.left;
-            const offsetY = touch.clientY - rect.top;
-
-            const onTouchMove = (moveEvent) => {
-                moveEvent.preventDefault(); // BLOQUEA el scroll de la página para que el arrastre sea ultra suave
-                isMoving = true;
-                const t = moveEvent.touches[0];
-                
-                // Movemos el widget siguiendo el dedo
-                fabContainer.style.left = `${t.clientX - offsetX}px`;
-                fabContainer.style.top = `${t.clientY - offsetY}px`;
-                fabContainer.style.bottom = 'auto'; 
-                fabContainer.style.right = 'auto';
-            };
-
-            const onTouchEnd = () => {
-                document.removeEventListener('touchmove', onTouchMove);
-                document.removeEventListener('touchend', onTouchEnd);
-                fabOptions.style.display = 'none'; // Ocultamos "Mover/Quitar" al soltarlo
-                
-                // Pequeño retardo para resetear la bandera de movimiento
-                setTimeout(() => isMoving = false, 100);
-            };
-
-            // Escuchamos el movimiento a nivel del documento entero mientras el dedo esté en la pantalla
-            document.addEventListener('touchmove', onTouchMove, { passive: false });
-            document.addEventListener('touchend', onTouchEnd);
         });
 
         // Quitar Botón
@@ -312,7 +309,6 @@
                         finalScript.src = scriptTag.src;
                         finalScript.setAttribute('data-cfasync', 'false');
                         document.body.appendChild(finalScript);
-                        console.log("💉 Bacteria inyectada exitosamente.");
                     }
                 } catch(e) {}
             };
